@@ -242,6 +242,12 @@ class FilterProfileTests(unittest.TestCase):
         self.assertTrue(prof["auth_required"])
         self.assertIn("authenticated session", prof["verdict"])
 
+    def test_header_login_widget_does_not_mark_auth_required(self):
+        prof = self.profile(
+            '<html><nav><input type="password" name="login"></nav>'
+            '<pre>hello</pre></html>')
+        self.assertFalse(prof["auth_required"])
+
     def test_normal_page_does_not_mark_challenge(self):
         prof = self.profile('<title>loader</title> please wait challenge captcha q')
         self.assertFalse(prof["waf_challenge"])

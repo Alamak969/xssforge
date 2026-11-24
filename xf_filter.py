@@ -136,7 +136,8 @@ def probe_points(opts, factory, limiter, points, state, max_points=3,
         normal_point = getattr(point, "location", "") in (
             "query", "form", "json", "graphql", "xml", "multipart",
             "multipart-filename", "path", "fragment")
-        if primary and normal_point and any(m in low for m in login_markers):
+        login_hits = [m for m in login_markers if m in low]
+        if primary and normal_point and len(login_hits) >= 2:
             profile["auth_required"] = True
         reflected = token in base_body
         profile["reflected"] = profile["reflected"] or reflected
