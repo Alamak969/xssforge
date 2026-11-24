@@ -63,6 +63,13 @@ class CorpusTests(unittest.TestCase):
         out = P.canaryize("<svg onload=alert(1)>", "tok9")
         self.assertIn("tok9", out)
 
+    def test_lt_only_encoder_keeps_alert_executable(self):
+        payload = "<script>alert('__M__')</script>"
+        self.assertEqual(P.ENCODERS["lt-url"](payload),
+                         "%3Cscript>alert('__M__')%3C/script>")
+        self.assertIn("alert('__M__')", P.ENCODERS["lt-html"](payload))
+        self.assertEqual(P.DECODERS["lt-url"]("%3Cscript>"), "<script>")
+
     def test_encoders_roundtrip_url(self):
         val = P.ENCODERS["url"]("<img src=x onerror=alert('__M__')>")
         self.assertIn("%3C", val)

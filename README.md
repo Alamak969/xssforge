@@ -28,7 +28,7 @@ blind workflows, WAF-aware payload selection and multi-location injection.
 - Diff/encoding analysis
 - Raw HTTP request file input
 - Output formats: JSON/JSONL/TOML/SARIF/HTML/MD
-- Payload corpus: 22,391 static vectors + mutations
+- Payload corpus: 22,496 static vectors + mutations
 
 ## Payload corpus
 
@@ -45,7 +45,7 @@ blind workflows, WAF-aware payload selection and multi-location injection.
 
 On top of that, `_gen_*` builds tag/handler combinations, attribute breakers,
 JS-string breakers, URL schemes and encoded variants at import time. Current
-total: **22,391 category entries / 18,771 unique payload strings** (`python3 xssforge.py --stats`), configurable
+total: **22,496 category entries / 18,876 unique payload strings** (`python3 xssforge.py --stats`), configurable
 per-context with `--payload-limit`. Every one of the 24 context categories
 (HTML, double/single/unquoted attribute, script, URL, CSS, comment, SVG, mXSS,
 CSP, polyglot, Angular, Vue, DOM, prototype pollution, postMessage, JSONP,
@@ -54,12 +54,14 @@ unique vectors**.
 
 ### Encoders / decoders
 
-38 encoders cover URL (single/double/triple/partial), HTML decimal/hex/padded/
+58 encoders cover URL (single/double/triple/partial), HTML decimal/hex/padded/
 named, JS `\u`/`\x`/octal, CSS escapes, comments, whitespace (tab/newline/CR/
 form-feed), null, zero-width, fullwidth, UTF-7/UTF-16LE/BE, quoted-printable,
 hex pairs, base64 (raw/eval/data-URI/script), `String.fromCharCode`, and more.
-13 decoders reverse URL/HTML/JS-escape/base64/hex/quoted-printable/UTF-16/
-fullwidth. Inspect or test them:
+`lt-url`, `lt-url2` and `lt-html` encode only `<`, leaving the `alert('__M__')`
+call executable when whole-payload encoding kills the proof. 15 decoders
+(`lt-url`/`lt-html` included) reverse URL/HTML/JS-escape/base64/hex/
+quoted-printable/UTF-16/fullwidth. Inspect or test them:
 
 ```bash
 python3 xssforge.py --list-encoders
@@ -263,7 +265,7 @@ leaves the host. It falls back across `oast.fun`, `oast.pro`, `oast.live`,
 python3 -m pytest tests/ -q
 ```
 
-148 tests: offline unit tests, local-lab browser/DOM integration tests and a slow-target reliability test. The
+149 tests: offline unit tests, local-lab browser/DOM integration tests and a slow-target reliability test. The
 integration suite starts the bundled deliberately-vulnerable `lab.py` on an
 ephemeral 127.0.0.1 port and self-skips if browser dependencies are missing.
 It asserts that known-executing fixtures become CONFIRMED and that escaped,

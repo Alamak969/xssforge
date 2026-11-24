@@ -699,6 +699,9 @@ def _noquote(p, wrapper):
 
 
 ENCODERS = {
+    "lt-url": lambda p: p.replace("<", "%3C"),
+    "lt-url2": lambda p: p.replace("<", "%253C"),
+    "lt-html": lambda p: p.replace("<", "&lt;"),
     "url": lambda p: urllib.parse.quote(p, safe=""),
     "url2": lambda p: urllib.parse.quote(urllib.parse.quote(p, safe=""), safe=""),
     "url3": lambda p: urllib.parse.quote(
@@ -809,6 +812,8 @@ def _dec_utf16(s, order="be"):
 
 
 DECODERS = {
+    "lt-url": lambda s: s.replace("%3C", "<").replace("%3c", "<"),
+    "lt-html": lambda s: s.replace("&lt;", "<").replace("&LT;", "<"),
     "url": urllib.parse.unquote,
     "url2": lambda s: urllib.parse.unquote(urllib.parse.unquote(s)),
     "url3": lambda s: urllib.parse.unquote(
