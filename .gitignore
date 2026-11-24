@@ -1,0 +1,36 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Scanner output: may contain captured responses, CSRF tokens, screenshots, cookies
+xssforge-out/
+xssforge-mass.json
+xssforge-*.json
+report-*.json
+report-*.html
+report-*.md
+report-*.sarif
+report-*.jsonl
+report-*.toml
+exploit-*.txt
+exploit*.js
+
+# Session / secret material
+cookies.txt
+jar.txt
+*.har
+*.pcap
+*.log
+.env
+.env.*
+*.pem
+*.key
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
