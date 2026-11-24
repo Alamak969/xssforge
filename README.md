@@ -265,7 +265,7 @@ leaves the host. It falls back across `oast.fun`, `oast.pro`, `oast.live`,
 python3 -m pytest tests/ -q
 ```
 
-150 tests: offline unit tests, local-lab browser/DOM integration tests and a slow-target reliability test. The
+151 tests: offline unit tests, local-lab browser/DOM integration tests and a slow-target reliability test. The
 integration suite starts the bundled deliberately-vulnerable `lab.py` on an
 ephemeral 127.0.0.1 port and self-skips if browser dependencies are missing.
 It asserts that known-executing fixtures become CONFIRMED and that escaped,

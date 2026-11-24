@@ -136,6 +136,13 @@ class MutationTests(unittest.TestCase):
         for _, payload in out:
             self.assertIn("__M__", payload)
 
+    def test_concat_and_split_mutations_are_valid_js(self):
+        out = dict(xf_mutate.mutate("alert('__M__')", "html", 30))
+        self.assertIn("window['ale'+'rt'](", out.get("mut:html:concat-call", ""))
+        self.assertIn("self['al'+'ert'](", out.get("mut:html:split-call", ""))
+        self.assertNotIn("'''](", out.get("mut:html:concat-call", ""))
+        self.assertEqual(out.get("mut:html:backtick-call"), "alert`'__M__'`")
+
     def test_mutations_are_unique(self):
         out = xf_mutate.mutate("<svg onload=alert('__M__')>", "attr_dq", 40)
         self.assertEqual(len({p for _, p in out}), len(out))

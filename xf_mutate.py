@@ -45,11 +45,13 @@ def _entity_call(text, token):
 
 
 def _concat_call(text):
-    return _CALL_RE.sub(lambda m: "window['%s'%s]" % (m.group(1)[:3], "''") + "(", text)
+    return _CALL_RE.sub(
+        lambda m: "window['%s'+'%s'](" % (m.group(1)[:3], m.group(1)[3:]), text)
 
 
 def _split_call(text):
-    return _CALL_RE.sub(lambda m: "'%s'+" % m.group(1) + "(", text)
+    return _CALL_RE.sub(
+        lambda m: "self['%s'+'%s'](" % (m.group(1)[:2], m.group(1)[2:]), text)
 
 
 def _js_escape(text):
@@ -75,7 +77,9 @@ def _generic(payload):
     out.append(("js-escape-call", _js_escape(payload)))
     out.append(("concat-call", _concat_call(payload)))
     out.append(("split-call", _split_call(payload)))
-    out.append(("backtick-call", _CALL_RE.sub(lambda m: m.group(1) + "`", payload)))
+    out.append(("backtick-call", re.sub(
+        r"\b(alert|confirm|prompt|print)\s*\(([^()]*)\)",
+        lambda m: "%s`%s`" % (m.group(1), m.group(2)), payload)))
     out.append(("no-paren-close", payload.rstrip(")")))
     out.append(("dup-tag", re.sub(r"(<[a-zA-Z][a-zA-Z0-9]*)", r"\1\1", payload, count=1)))
     out.append(("angle-entity", payload.replace("<", "&#60;").replace(">", "&#62;")))
