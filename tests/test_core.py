@@ -63,6 +63,15 @@ class CorpusTests(unittest.TestCase):
         out = P.canaryize("<svg onload=alert(1)>", "tok9")
         self.assertIn("tok9", out)
 
+    def test_case_bypass_keeps_js_identifier_valid(self):
+        p = "</script><img src=x onerror=alert('__M__')>"
+        variants = dict(P.bypass_variants(p, "html", 20))
+        case = variants.get("bypass:case", "")
+        self.assertIn("alert(", case)
+        self.assertNotIn("aLeRt", case)
+        self.assertIn("</sCrIpT>", case)
+        self.assertIn("oNeRrOr", case)
+
     def test_lt_only_encoder_keeps_alert_executable(self):
         payload = "<script>alert('__M__')</script>"
         self.assertEqual(P.ENCODERS["lt-url"](payload),

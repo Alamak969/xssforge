@@ -1545,9 +1545,21 @@ def _outside(payload, fn):
     return "".join(out)
 
 
+def _mix_case(s):
+    return "".join(
+        ch.swapcase() if (i % 2 and ch.isalpha()) else ch for i, ch in enumerate(s))
+
+
 def _b_case(p):
-    return _outside(p, lambda s: "".join(
-        ch.swapcase() if (i % 2 and ch.isalpha()) else ch for i, ch in enumerate(s)))
+    """Vary HTML tag/attribute case only; JS identifiers are case-sensitive."""
+    parts = re.split(r"('[^']*'|\"[^\"]*\"|`[^`]*`)", p)
+    for i in range(0, len(parts), 2):
+        seg = re.sub(r"(</?)([a-zA-Z][a-zA-Z0-9-]*)",
+                     lambda m: m.group(1) + _mix_case(m.group(2)), parts[i])
+        seg = re.sub(r"\b([a-zA-Z][a-zA-Z0-9_-]*)(\s*=)",
+                     lambda m: _mix_case(m.group(1)) + m.group(2), seg)
+        parts[i] = seg
+    return "".join(parts)
 
 
 def _b_tagcase(p):
