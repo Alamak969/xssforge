@@ -268,6 +268,8 @@ def format_report(profile):
         lines.append("  AUTH    : login page returned — session cookie missing/invalid")
     if profile.get("waf_challenge"):
         lines.append("  CHALLENGE: WAF/bot interstitial — echoed canary is not a real reflection")
+        lines.append("  NEXT    : solve in a real browser; pass cookies via -c 'cf_clearance=...' or --cookie-file JAR")
+        lines.append("  NEXT    : if IP-blocked use --proxy-file FILE, then re-run with --auto --browser")
     lines.append("  blocked : %s" % (", ".join(profile["blocked"]) or "none"))
     lines.append("  removed : %s" % (", ".join(profile["removed"]) or "none"))
     if profile["escaped"]:

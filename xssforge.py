@@ -2772,6 +2772,10 @@ def main():
                 emit(c("auto   : WAF/bot challenge page returned — the echo is an "
                        "interstitial, not application output; payload phase skipped.",
                        "red"))
+                emit(c("auto   : NEXT: solve challenge in a real browser, then pass "
+                       "-c 'cf_clearance=...' or --cookie-file JAR; if IP-blocked "
+                       "use --proxy-file FILE and re-run with --auto --browser.",
+                       "yellow"))
                 return 1
             if not prof["reflected"]:
                 emit(c("auto   : input is not reflected — no reflected/stored XSS "
