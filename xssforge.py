@@ -656,9 +656,18 @@ def _looks_blocked(resp):
     body = (getattr(resp, "text", "") or "")[:6000].lower()
     markers = ("access denied", "request blocked", "blocked by",
                "web application firewall", "security policy",
-               "suspicious activity", "not acceptable", "captcha",
+               "suspicious activity", "not acceptable",
                "attention required", "challenge required")
     if any(m in body for m in markers):
+        return True
+    # "captcha" on its own is far too broad: ordinary pages mention it in menus
+    # and docs (e.g. DVWA's "Insecure CAPTCHA" link). Only treat it as a block
+    # when paired with an actual challenge phrase.
+    captcha_markers = ("captcha required", "solve the captcha",
+                       "complete the captcha", "please solve the captcha",
+                       "verify you are human", "recaptcha challenge",
+                       "enter the captcha", "captcha verification")
+    if any(m in body for m in captcha_markers):
         return True
     # JS-challenge / interstitial pages echo the requested URL (incl. canary)
     # but are not real reflections — don't let them appear as injection points.
@@ -732,6 +741,42 @@ def _save_poc(opts, point, name, value, resp, ctx):
         return ""
 
 
+def _quote_mangled(body, token):
+    """True if the canary's surrounding quotes were backslash/entity-escaped.
+
+    Servers running addslashes()/htmlspecialchars() turn alert('TOK') into
+    alert(\\'TOK\\') / alert(&#39;TOK&#39;) — a SyntaxError, even though the
+    tags themselves survive. Such reflections are still exploitable with a
+    quote-less canary (alert(/TOK/) or alert(`TOK`)).
+    """
+    if not body or not token:
+        return False
+    pos = body.find(token)
+    if pos < 0:
+        return False
+    pre = body[max(0, pos - 12):pos]
+    post = body[pos + len(token):pos + len(token) + 12]
+    around = pre + post
+    return ("\\'" in around or '\\"' in around
+            or "&#x27;" in around or "&#39;" in around
+            or "&quot;" in around or "&#x22;" in around)
+
+
+def _noquote_retry(point, value, token, opts, state, shot):
+    """Re-verify a quote-mangled payload with quote-less canary literals."""
+    for style in ("regex", "template"):
+        nv = P.canaryize_noquote(value, token, style)
+        if nv == value or token not in nv:
+            continue
+        if state["bcount"][0] >= opts.browser_max:
+            return None, None
+        state["bcount"][0] += 1
+        vr = state["browser"].verify(point, nv, token, shot)
+        if vr.get("hit"):
+            return nv, vr
+    return None, None
+
+
 def test_payload(ctx, point, name, raw_payload, opts, state):
     token = state["token"]
     value = P.canaryize(raw_payload, token)
@@ -793,6 +838,24 @@ def test_payload(ctx, point, name, raw_payload, opts, state):
             return entry, True
         if vr.get("detail"):
             entry["detail"] += "; browser: " + vr["detail"][:120]
+        # Auto-escalate quote-mangled reflections: retry a quote-less canary so
+        # an exploitable target is reported as CONFIRMED, not left as LIKELY.
+        if vr.get("syntax_error") or _quote_mangled(body, token):
+            nv, nvr = _noquote_retry(point, value, token, opts, state, shot)
+            if nvr and nvr.get("hit"):
+                entry.update({
+                    "value": nv,
+                    "status": "CONFIRMED",
+                    "confidence": 95,
+                    "detail": "quote-mangled reflection; quote-less canary "
+                              "executed: " + str(nvr.get("detail", ""))[:120],
+                    "screenshot": shot,
+                    "url": xf_points.build_request(point, nv, opts)[1],
+                    "curl": xf_points.curl_repro(point, nv, opts),
+                })
+                if getattr(opts, "show_on_confirm", False):
+                    _show_confirm(point, nv, opts)
+                return entry, True
     return entry, False
 
 

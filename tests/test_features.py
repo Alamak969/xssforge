@@ -180,6 +180,32 @@ class WafTests(unittest.TestCase):
         fp = xf_waf.fingerprint({"x-goog-cloud-armor": "1"}, "", 200)
         self.assertIn("Google Cloud Armor", fp["waf"])
 
+    def _blocked(self, body, status=200):
+        import xssforge
+        return xssforge._looks_blocked(
+            type("R", (), {"text": body, "status_code": status})())
+
+    def test_captcha_menu_link_is_not_a_block(self):
+        body = ('<nav><a href="/vulnerabilities/captcha/">Insecure CAPTCHA'
+                '</a></nav><pre>Hello world</pre>')
+        self.assertFalse(self._blocked(body))
+
+    def test_captcha_challenge_phrase_is_a_block(self):
+        body = "Please solve the captcha to continue."
+        self.assertTrue(self._blocked(body))
+
+    def test_403_status_is_a_block(self):
+        self.assertTrue(self._blocked("nope", 403))
+
+    def test_quote_mangling_is_detected(self):
+        import xssforge
+        self.assertTrue(xssforge._quote_mangled(
+            "<svg onload=alert(\\'zqabc1234\\')>", "zqabc1234"))
+        self.assertTrue(xssforge._quote_mangled(
+            "alert(&#39;zqabc1234&#39;)", "zqabc1234"))
+        self.assertFalse(xssforge._quote_mangled(
+            "alert('zqabc1234')", "zqabc1234"))
+
 
 class FilterProfileTests(unittest.TestCase):
     class Resp:

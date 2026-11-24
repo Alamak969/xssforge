@@ -5,7 +5,7 @@ HTML5-flavoured state machine from the start of the document. This is much more
 accurate than regex look-behind heuristics for nested tags, SVG, RCDATA and
 JavaScript strings.
 """
-from html import unescape
+from html import escape as _html_escape, unescape
 
 RAW_TEXT_TAGS = {"script", "style", "textarea", "title", "xmp", "iframe",
                  "noembed", "noframes", "plaintext"}
@@ -457,10 +457,23 @@ def response_encoding_hint(body, payload, token):
     esc = unescape(payload)
     if esc in body:
         return "html-encoded-then-decoded"
+    # Servers commonly run htmlspecialchars/html.escape, which encodes quotes as
+    # well as angle brackets (&#x27; / &quot;). Detect the fully-escaped forms
+    # before falling back to the angle-bracket-only check.
+    if _html_escape(payload, quote=True) in body:
+        return "html-entity-escaped"
     # common escaping: payload's angle brackets/entities encoded
     no_lt = payload.replace("<", "&lt;").replace(">", "&gt;")
     if no_lt in body:
         return "html-entity-escaped"
+    # Heuristic: the payload contained a raw '<' but none survives in the body
+    # while an entity form is present -> the tag was entity-encoded, not
+    # "mutated" (mutated implies the payload survived in a transformed but
+    # still-injectable form).
+    if "<" in payload and "<" not in body:
+        low = body.lower()
+        if any(e in low for e in ("&lt;", "&#60;", "&#x3c;", "&#lt;")):
+            return "html-entity-escaped"
     if payload.replace("<", "").replace(">", "") in body:
         return "tag-stripped"
     return "mutated"

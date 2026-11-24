@@ -84,6 +84,34 @@ class ContextTests(unittest.TestCase):
         self.assertIsNotNone(ctx)
         self.assertIn("script", ctx.get("context"))
 
+    def test_encoding_hint_quote_escaped_is_entity_escaped(self):
+        import html
+        payload = "<script>alert('TOKEN')</script>"
+        body = "<pre>Hello %s</pre>" % html.escape(payload, quote=True)
+        self.assertEqual(
+            xf_context.response_encoding_hint(body, payload, "TOKEN"),
+            "html-entity-escaped")
+
+    def test_encoding_hint_angle_only_still_entity_escaped(self):
+        payload = "<script>alert('TOKEN')</script>"
+        body = payload.replace("<", "&lt;").replace(">", "&gt;")
+        self.assertEqual(
+            xf_context.response_encoding_hint(body, payload, "TOKEN"),
+            "html-entity-escaped")
+
+    def test_encoding_hint_raw_reflection(self):
+        payload = "<svg onload=alert('TOKEN')>"
+        self.assertEqual(
+            xf_context.response_encoding_hint(payload, payload, "TOKEN"), "raw")
+
+    def test_canaryize_noquote_survives_quote_escaping(self):
+        self.assertEqual(
+            P.canaryize_noquote("alert('zqabc1234')", "zqabc1234", "regex"),
+            "alert(/zqabc1234/)")
+        self.assertEqual(
+            P.canaryize_noquote("alert('zqabc1234')", "zqabc1234", "template"),
+            "alert(`zqabc1234`)")
+
 
 class MutationTests(unittest.TestCase):
     def test_mutations_preserve_marker(self):
@@ -357,6 +385,33 @@ class ReportFilterTests(unittest.TestCase):
         dropped = xf_report.filter_low_confidence(results, "high")
         self.assertEqual(dropped, 2)
         self.assertEqual(len(results[0]["candidates"]), 1)
+
+
+class RealWorldVectorTests(unittest.TestCase):
+    def test_realworld_block_merged(self):
+        for cat, items in P.REALWORLD_2026.items():
+            self.assertTrue(items, cat)
+            corpus = {p for _, p in P.PAYLOADS.get(cat, [])}
+            for name, payload in items:
+                self.assertIn(payload, corpus, (cat, name))
+
+    def test_realworld_placeholders_and_canary(self):
+        for cat, items in P.REALWORLD_2026.items():
+            for name, payload in items:
+                self.assertIn("__M__", payload, (cat, name))
+                got = P.fill(payload, "tok123")
+                self.assertNotIn("__M__", got)
+                self.assertIn("tok123", got)
+
+    def test_dompurify_recontext_vectors(self):
+        ps = dict((n, p) for n, p in P.REALWORLD_2026["mxss"])
+        for wrapper in ("xmp", "noscript", "textarea", "iframe", "noembed", "noframes"):
+            self.assertIn("</" + wrapper, ps["dp-%s-recontext" % wrapper])
+            self.assertIn("onerror=alert", ps["dp-%s-recontext" % wrapper])
+
+    def test_firewall_mirrors_waf(self):
+        self.assertEqual(len(P.PAYLOADS["firewall"]), len(P.PAYLOADS["waf"]))
+        self.assertEqual(P.PAYLOADS["firewall"], P.PAYLOADS["waf"])
 
 
 if __name__ == "__main__":
