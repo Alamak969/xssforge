@@ -114,6 +114,10 @@ class VerifyCallTests(unittest.TestCase):
             list(ex.map(call, range(50)))
         self.assertEqual(state["browser_verifier"]["counts"]["UNAVAILABLE"], 50)
 
+    def test_payload_block_count_reaches_meta(self):
+        self.assertEqual(X.payload_block_count({"blocked": [6]}), 6)
+        self.assertEqual(X.payload_block_count({}), 0)
+
     def test_trusted_click_on_canary_element(self):
         el = Mock()
         el.get_attribute.return_value = "<a href=\"javascript:alert('zqabc')\">x</a>"

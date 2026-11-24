@@ -481,6 +481,11 @@ def _peak_memory_mb():
 _VERIFIER_LOCK = threading.Lock()
 
 
+def payload_block_count(state):
+    """WAF/filter blocks seen on payload attempts (tracked outside _BLOCKS)."""
+    return int((state.get("blocked") or [0])[0])
+
+
 def _verify_call(opts, state, call):
     """Run the browser oracle with explicit state handling; never crash a scan."""
     browser = state.get("browser")
@@ -3201,7 +3206,9 @@ def main():
                dropped, "dim"))
     xf_evidence.annotate(results)
     verification_summary = xf_verify.annotate(results, state.get("browser_verifier"))
-    meta = {"waf": fp.get("waf", []), "waf_blocked": fp.get("blocked", False),
+    payload_blocks = payload_block_count(state)
+    meta = {"waf": fp.get("waf", []),
+            "waf_blocked": bool(fp.get("blocked", False) or payload_blocks),
             "waf_confidence": fp.get("confidence", 0),
             "waf_suppressed": fp.get("waf_suppressed", False),
             "libraries": state.get("libraries") or {},
@@ -3219,7 +3226,8 @@ def main():
             "filter_fingerprints": [
                 {"point": r.get("point"), "fingerprint": r.get("filter_fingerprint")}
                 for r in results if r.get("filter_fingerprint")],
-            "http_blocks": _BLOCKS.count, "http_block_events": _BLOCKS.events,
+            "http_blocks": _BLOCKS.count + payload_blocks,
+            "http_block_events": _BLOCKS.events,
             "banned": _BLOCKS.banned, "ban_recoveries": _BLOCKS.recoveries,
             "browser": dict(state.get("browser_verifier") or {}),
             "verification": verification_summary,
