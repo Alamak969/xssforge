@@ -1,37 +1,34 @@
 # xssforge
 
-Context-aware XSS scanner with execution proof. Built to cover the ground that
-single-purpose scanners leave out: precise HTML/JS context classification,
-static DOM taint review, a headless-browser oracle, stored and blind workflows,
-WAF-aware payload selection and multi-location injection.
+Context-aware XSS scanner with execution proof: precise HTML/JS context
+classification, static DOM taint review, a headless-browser oracle, stored and
+blind workflows, WAF-aware payload selection and multi-location injection.
 
 > **Authorized testing only.** The scanner refuses to run without
 > `--authorized`. Use it only on assets you own or have written permission to
 > test. `lab.py` is a deliberately vulnerable local target for practice.
 
-## Why it is different
+## Capabilities
 
-| Capability | xssforge | Dalfox | XSStrike | knoxss | Hunter/HunterXSS | Interactsh | Burp |
-|---|---|---|---|---|---|---|---|
-| HTML/JS context tokenizer | yes (state machine) | partial | partial | no | no | n/a | via extensions |
-| Query/form/JSON/GraphQL/XML/multipart/path/fragment/header/cookie injection | yes | partial | partial | no | URL only | n/a | yes |
-| Browser execution proof (alert/confirm/prompt/DOM write hooks) | yes | no | no | no | no | n/a | paid |
-| Static DOM source->sink taint | yes | limited | no | no | no | n/a | limited |
-| Structural JS analysis (class fields, getters, params, exports) | yes | yes (AST) | partial | no | no | n/a | no |
-| Evidence tiers + detection method | V/A/R/I | V/A/R/I | no | no | no | n/a | no |
-| Library version -> targeted gadget payloads | yes | no | partial | no | no | n/a | no |
-| Mid-scan session-loss detection | yes | partial | no | no | no | n/a | no |
-| Built-in blind-XSS collaborator | yes | via interactsh | no | no | no | yes | paid |
-| Interactsh auto-registration (no Go binary) | yes | no | no | no | no | n/a | paid |
-| Dynamic WAF-evasion mutation engine | yes | no | no | no | no | n/a | partial |
-| OpenAPI/Swagger endpoint import | yes | no | no | no | no | n/a | paid |
-| Login/session establishment | yes | partial | no | no | no | n/a | yes |
-| Stored-XSS seeding + repeatable triggers + upload/attachment follow | yes | partial | no | no | no | n/a | manual |
-| WAF fingerprint + curated bypass hints | yes | yes | partial | no | no | n/a | partial |
-| Diff/encoding analysis | yes | partial | yes | no | no | n/a | partial |
-| Burp raw-request input | yes | no | no | no | no | n/a | n/a |
-| Output formats | JSON/JSONL/TOML/SARIF/HTML/MD | JSON/SARIF | JSON | JSON | n/a | n/a | many |
-| Payload corpus | 22,093 static + mutations | payloadbox | built-in | built-in | built-in | n/a | ext |
+- HTML/JS context tokenizer (state machine)
+- Query/form/JSON/GraphQL/XML/multipart/path/fragment/header/cookie injection
+- Browser execution proof (alert/confirm/prompt/DOM write hooks)
+- Static DOM source->sink taint analysis
+- Structural JS analysis (class fields, getters, params, exports)
+- Evidence tiers + detection method (V/A/R/I)
+- Library version -> targeted gadget payloads
+- Mid-scan session-loss detection
+- Built-in blind-XSS collaborator
+- Interactsh auto-registration (no Go binary needed)
+- Dynamic WAF-evasion mutation engine
+- OpenAPI/Swagger endpoint import
+- Login/session establishment
+- Stored-XSS seeding + repeatable triggers + upload/attachment follow
+- WAF fingerprint + curated bypass hints
+- Diff/encoding analysis
+- Raw HTTP request file input
+- Output formats: JSON/JSONL/TOML/SARIF/HTML/MD
+- Payload corpus: 22,093 static vectors + mutations
 
 ## Payload corpus
 
