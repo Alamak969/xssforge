@@ -5,6 +5,7 @@ import secrets
 import shutil
 import threading
 import time
+from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 try:
@@ -17,6 +18,7 @@ except ImportError:
     HAVE_SELENIUM = False
 
 import xf_points
+import xf_verify
 
 
 def _is_url_echo_network(entry):
@@ -163,6 +165,8 @@ class BrowserPool:
         self._binary = next((shutil.which(b) for b in
                              ("chromium", "chromium-browser", "google-chrome",
                               "google-chrome-stable") if shutil.which(b)), None)
+        self.browser_version = ""
+        self.automation_version = xf_verify.automation_version()
         self.error = None
         if not HAVE_SELENIUM:
             self.error = "selenium not installed"
@@ -202,6 +206,10 @@ class BrowserPool:
             pass
         service = Service(executable_path=self._chromedriver)
         d = webdriver.Chrome(service=service, options=o)
+        try:
+            self.browser_version = str(d.capabilities.get("browserVersion") or "")
+        except Exception:
+            self.browser_version = ""
         d.set_page_load_timeout(max(5, int(self.opts.timeout)))
         d.set_script_timeout(max(5, int(self.opts.timeout)))
         return d
@@ -230,7 +238,43 @@ class BrowserPool:
                 pass
         self._all = []
 
-    def verify(self, point, value, token, screenshot_path="", reuse_token=False):
+    def status(self):
+        """Return explicit verifier state and environment metadata."""
+        return xf_verify.verifier_status(self, requested=True)
+
+    def _annotate(self, vr):
+        """Attach verifier state and evidence metadata to a verification result."""
+        vr = dict(vr or {})
+        if "state" not in vr:
+            if vr.get("hit"):
+                vr["state"] = xf_verify.VERIFIER_COMPLETED
+            elif vr.get("error") or vr.get("blocked"):
+                low = str(vr.get("detail") or "").lower()
+                timed_out = "timed out" in low or "timeout" in low
+                vr["state"] = (xf_verify.VERIFIER_TIMED_OUT if timed_out
+                               else xf_verify.VERIFIER_FAILED)
+            else:
+                vr["state"] = xf_verify.VERIFIER_COMPLETED
+        if vr.get("hit"):
+            ev = dict(vr.get("evidence") or {})
+            ev.setdefault("type", "challenge-win-marker" if "challenge win marker" in
+                          str(vr.get("detail") or "").lower() else "canary-execution")
+            ev.setdefault("test_id", "xf-" + secrets.token_hex(6))
+            ev.setdefault("timestamp", datetime.now(timezone.utc).isoformat())
+            ev.setdefault("browser", self.browser_version or "unknown")
+            ev.setdefault("automation", "selenium")
+            ev.setdefault("automation_version", self.automation_version)
+            ev.setdefault("detail", str(vr.get("detail") or "")[:240])
+            vr["evidence"] = ev
+        return vr
+
+    def verify(self, *args, **kwargs):
+        return self._annotate(self._verify(*args, **kwargs))
+
+    def verify_form(self, *args, **kwargs):
+        return self._annotate(self._verify_form(*args, **kwargs))
+
+    def _verify(self, point, value, token, screenshot_path="", reuse_token=False):
         if not self.available:
             return {"hit": False, "logs": [], "detail": self.error, "error": True}
         # Use a unique canary for EACH verification. The caller reuses one token
@@ -340,7 +384,7 @@ class BrowserPool:
                     "detail": "JS activity without execution proof: " + blob[:200]}
         return {"hit": False, "logs": [], "detail": detail or "no execution"}
 
-    def verify_form(self, url, field, value, submit, token, screenshot_path=""):
+    def _verify_form(self, url, field, value, submit, token, screenshot_path=""):
         """Fill an on-page form field, click its submit control, and collect proof.
 
         For DOM-stored sinks (e.g. localStorage -> innerHTML) where the page's

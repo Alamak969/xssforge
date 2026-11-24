@@ -108,10 +108,24 @@ python3 tools/build_corpus.py --hexbrain-html /path/to/hexbrain.html
 
 ## Install
 
+Supported: Python 3.12+ on Linux (headless Chromium). CI verifies 3.12 and
+3.14. Other POSIX systems may work but are not currently tested.
+
+Clean install (reproducible, pinned):
+
 ```bash
-pip install -r requirements.txt
-# browser proof needs Chromium + chromedriver on PATH
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.lock
 ```
+
+`requirements.txt` carries compatible version ranges for general use;
+`requirements.lock` pins exact versions used by CI. Browser proof additionally
+needs `selenium`, `chromedriver` and `chromium`/`chrome` on PATH (e.g.
+`sudo apt-get install chromium chromium-driver` on Debian/Ubuntu). If any of
+these are missing, the browser verifier reports `UNAVAILABLE` and **no finding
+can be CONFIRMED** — it does not crash or silently claim verification.
 
 ## Usage
 
@@ -243,12 +257,60 @@ leaves the host. It falls back across `oast.fun`, `oast.pro`, `oast.live`,
 ## Testing
 
 ```bash
-python3 -m unittest discover -s tests -v
+python3 -m pytest tests/ -q
 ```
 
-The suite is offline (73 tests): corpus size, per-category >=300, bypass
-coverage/placeholder preservation, context classification, mutation invariants,
-point/request construction, OpenAPI conversion and interactsh crypto roundtrip.
+146 tests: offline unit tests, local-lab browser/DOM integration tests and a slow-target reliability test. The
+integration suite starts the bundled deliberately-vulnerable `lab.py` on an
+ephemeral 127.0.0.1 port and self-skips if browser dependencies are missing.
+It asserts that known-executing fixtures become CONFIRMED and that escaped,
+plain-text and negative fixtures never do. CI publishes JUnit XML and pytest
+logs as artifacts. The versioned fixture list is `benchmark/cases.json`.
+
+Scope: run tests and scans only against the bundled lab, intentionally
+vulnerable applications, or systems you have explicit written authorization to
+test. The scanner requires `--authorized` for live targets.
+
+## Verification states
+
+Findings carry an explicit `verification` field:
+
+- `REFLECTION` / `CANDIDATE` / `LIKELY` — echo or context evidence only;
+  execution is **not** established.
+- `CONFIRMED` — a harmless per-scan canary demonstrably executed in an isolated
+  headless browser; includes `browser_evidence` with evidence type, test ID,
+  UTC timestamp, browser version and automation version.
+- `CALLBACK_OBSERVED` — out-of-band callback only; not browser confirmation.
+- `NOT_VERIFIED` — verification could not be performed or produced no proof;
+  `verification_reason` explains why.
+
+The scan-level browser oracle state is recorded in report metadata under
+`meta.browser` (`DISABLED`, `UNAVAILABLE`, `READY`, `COMPLETED`, `TIMED_OUT`,
+`FAILED`) together with verifier counts. Reports also include scan start/end,
+duration, request count, requests/second and peak memory under `meta.scan`.
+`Ctrl-C` sets a shared stop flag so in-flight work finishes cleanly; transport
+and 502/503/504 retries are bounded in one place and logged.
+
+## DOM, stored and blind evidence
+
+DOM findings carry a `flow` string (`source -> variable -> sink`), `line`,
+`column`, `script` URL, `snippet` and `analysis: static-source-to-sink`. With
+`--dom --browser`, controllable sources (`location.hash`, `location.search`
+and URL-parsing APIs) get an in-browser canary attempt; only a real execution
+sets `CONFIRMED` plus `browser_evidence`. Sources that cannot be driven from the
+browser URL (cookies, storage, postMessage, referrer) stay `NOT_VERIFIED` with a
+reason. Static analysis alone is never a confirmed finding; minified/obfuscated
+JS, framework internals and asynchronous flows remain known blind spots.
+
+Stored tests use per-trigger random test IDs (`test_id`). A disposable record is
+cleaned up only when the operator supplies `--stored-cleanup-url`; the URL,
+HTTP result and cleanup status are recorded per result. No cleanup endpoint is
+guessed. Out-of-band traffic happens only with explicit `--blind`,
+`--oob-server` or `--interactsh` configuration; `meta.oob` records the provider,
+and blind hits are labeled `CALLBACK_OBSERVED`, never browser-confirmed.
+Each blind hit is normalized into `callback_evidence` (provider, per-scan token,
+UTC hit times, method/path/client) and rendered in the JSON, Markdown and HTML
+reports; the raw collaborator/interactsh records remain in `blind_hits`.
 
 ## Layout
 

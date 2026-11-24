@@ -115,7 +115,8 @@ class EvidenceTests(unittest.TestCase):
     def test_tiers(self):
         results = [
             self.result(candidates=[{"status": "CONFIRMED", "confidence": 95,
-                                     "screenshot": "s.png", "name": "x"}]),
+                                     "screenshot": "s.png", "name": "x",
+                                     "browser_evidence": {"type": "canary-execution"}}]),
             self.result(location="libscan",
                         candidates=[{"status": "LIKELY", "confidence": 70, "name": "lib"}]),
             self.result(candidates=[{"status": "REFLECTED", "confidence": 45,

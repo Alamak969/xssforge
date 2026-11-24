@@ -4,6 +4,7 @@
 Deliberately vulnerable. Binds to 127.0.0.1 only - use it to validate the
 scanner; never expose it.
 """
+import html
 import json
 import sys
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -15,6 +16,8 @@ BLIND = []
 
 INDEX = """<html><body><h1>xssforge local lab</h1><ul>
 <li><a href="/reflected?q=hi">/reflected?q=</a> - HTML context</li>
+<li><a href="/escaped?q=hi">/escaped?q=</a> - negative: HTML-escaped output</li>
+<li><a href="/plain?q=hi">/plain?q=</a> - negative: text/plain output</li>
 <li><a href="/attr?q=hi">/attr?q=</a> - double-quoted attribute</li>
 <li><a href="/attr_sq?q=hi">/attr_sq?q=</a> - single-quoted attribute</li>
 <li><a href="/attr_uq?q=hi">/attr_uq?q=</a> - unquoted attribute</li>
@@ -71,6 +74,11 @@ class H(BaseHTTPRequestHandler):
             self._send(INDEX)
         elif p == "/reflected":
             self._send("<html><body><h1>Search</h1><div>%s</div></body></html>" % v)
+        elif p == "/escaped":
+            safe = html.escape(v, quote=True)
+            self._send("<html><body><div>%s</div></body></html>" % safe)
+        elif p == "/plain":
+            self._send(v, "text/plain; charset=utf-8")
         elif p == "/attr":
             self._send('<html><body><input type="text" name="q" value="%s"></body></html>' % v)
         elif p == "/attr_sq":

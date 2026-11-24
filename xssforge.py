@@ -15,6 +15,7 @@ import json
 import os
 import re
 import secrets
+import signal
 import sys
 import threading
 import time
@@ -55,6 +56,7 @@ import xf_session
 import xf_ai
 import xf_gadget
 import xf_hunt
+import xf_verify
 
 RESET = "\033[0m"
 COLORS = {"red": "\033[31m", "green": "\033[32m", "yellow": "\033[33m",
@@ -163,6 +165,7 @@ class Options:
     inject_cookies: list = field(default_factory=list)
     stored_url: str = ""
     stored_urls: list = field(default_factory=list)
+    stored_cleanup_url: str = ""
     csrf_url: str = ""
     only_poc: bool = False
     ai_fallback: bool = False
@@ -272,6 +275,12 @@ class BlockTracker:
 
 
 _BLOCKS = BlockTracker()
+_INTERRUPT = threading.Event()
+
+
+def _handle_interrupt(_signum, _frame):
+    _INTERRUPT.set()
+    emit(c("\n! interrupted — stopping after in-flight requests", "yellow"))
 
 
 class RateLimiter:
@@ -311,6 +320,7 @@ class SessionFactory:
                             ([opts.proxy] if opts.proxy else []))
         self.proxy_index = 0
         self.lock = threading.Lock()
+        self.request_count = 0
 
     def rotate(self):
         if len(self.proxies) < 2:
@@ -347,13 +357,12 @@ class SessionFactory:
         if self.opts.cookie:
             h["Cookie"] = self.opts.cookie
         s.headers.update(h)
-        if self.opts.retries:
-            retry = Retry(total=self.opts.retries, backoff_factor=0.2,
-                          status_forcelist=(502, 503, 504),
-                          allowed_methods=frozenset(["GET", "HEAD", "OPTIONS"]))
-            ad = HTTPAdapter(max_retries=retry, pool_connections=32, pool_maxsize=32)
-            s.mount("http://", ad)
-            s.mount("https://", ad)
+        # Retries are owned by send() so the attempt budget is bounded in one
+        # place; urllib3-level retries would multiply it (retries^2).
+        retry = Retry(total=0, backoff_factor=0.2)
+        ad = HTTPAdapter(max_retries=retry, pool_connections=32, pool_maxsize=32)
+        s.mount("http://", ad)
+        s.mount("https://", ad)
         if proxy:
             s.proxies = {"http": proxy, "https": proxy}
         if self.opts.cookie_file:
@@ -420,9 +429,17 @@ def send(factory, limiter, point, value, opts, allow_redirects=None, count_block
                                           opts.max_body)
             else:
                 r = factory.get().request(**kwargs)
+            if hasattr(factory, "request_count"):
+                with factory.lock:
+                    factory.request_count += 1
             if len(r.content or b"") > opts.max_body:
                 r._content = r.content[:opts.max_body]
             status = getattr(r, "status_code", 0)
+            if status in (502, 503, 504) and attempt + 1 < attempts:
+                emit(c("    ~ retry %d/%d after HTTP %d" %
+                       (attempt + 1, attempts - 1, status), "yellow"))
+                time.sleep(0.5 * (attempt + 1))
+                continue
             if status == 429:
                 limiter.penalize()
             elif status < 400:
@@ -437,7 +454,12 @@ def send(factory, limiter, point, value, opts, allow_redirects=None, count_block
                 _BLOCKS.note(status, kwargs.get("url", ""), count=count_block)
             return r
         except requests.RequestException as e:
+            if hasattr(factory, "request_count"):
+                with factory.lock:
+                    factory.request_count += 1
             if attempt + 1 < attempts and _transient_request_error(e):
+                emit(c("    ~ retry %d/%d after %s" %
+                       (attempt + 1, attempts - 1, str(e)[:100]), "yellow"))
                 time.sleep(0.5 * (attempt + 1))
                 continue
             return e
@@ -445,6 +467,74 @@ def send(factory, limiter, point, value, opts, allow_redirects=None, count_block
 
 def build_headers(opts):
     return {"User-Agent": opts.user_agent}
+
+
+def _peak_memory_mb():
+    try:
+        import resource
+        rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        return round(rss / (1048576.0 if sys.platform == "darwin" else 1024.0), 1)
+    except Exception:
+        return None
+
+
+_VERIFIER_LOCK = threading.Lock()
+
+
+def _verify_call(opts, state, call):
+    """Run the browser oracle with explicit state handling; never crash a scan."""
+    browser = state.get("browser")
+    if not getattr(opts, "browser", False):
+        vr = {"hit": False, "state": xf_verify.VERIFIER_DISABLED,
+              "detail": "browser verification disabled (--browser not requested)"}
+    elif browser is None or not getattr(browser, "available", False):
+        vr = {"hit": False, "state": xf_verify.VERIFIER_UNAVAILABLE,
+              "detail": "browser verification unavailable: %s" %
+                        (getattr(browser, "error", None) or "oracle not started")}
+    else:
+        try:
+            vr = call(browser)
+        except Exception as e:
+            vr = {"hit": False, "state": xf_verify.VERIFIER_FAILED, "error": True,
+                  "detail": "browser verifier exception: %s" % str(e)[:180]}
+    vr = dict(vr or {})
+    vstate = vr.get("state") or xf_verify.VERIFIER_COMPLETED
+    with _VERIFIER_LOCK:
+        info = state.get("browser_verifier") or xf_verify.verifier_status(
+            browser, requested=getattr(opts, "browser", False))
+        info["state"] = vstate
+        info["counts"] = dict(info.get("counts") or {})
+        info["counts"][vstate] = info["counts"].get(vstate, 0) + 1
+        info["last_detail"] = str(vr.get("detail") or "")[:240]
+        info["updated"] = xf_verify._now()
+        state["browser_verifier"] = info
+    return vr
+
+
+def browser_verify(point, value, token, shot, opts, state, **kwargs):
+    return _verify_call(
+        opts, state,
+        lambda b: b.verify(point, value, token, shot, **kwargs))
+
+
+def browser_verify_form(url, field, value, submit, token, shot, opts, state):
+    return _verify_call(
+        opts, state,
+        lambda b: b.verify_form(url, field, value, submit, token, shot))
+
+
+def set_verification(entry, vr):
+    """Record an honest per-finding verification state and its evidence."""
+    if vr and vr.get("hit"):
+        entry.update(xf_verify.finding(
+            xf_verify.FINDING_CONFIRMED,
+            reason=str(vr.get("detail") or "browser execution proof")[:300],
+            evidence=vr.get("evidence")))
+    else:
+        entry.update(xf_verify.finding(
+            xf_verify.FINDING_NOT_VERIFIED,
+            reason=str((vr or {}).get("detail") or "no canary execution observed")[:300]))
+    return entry
 
 
 # ---------------------------------------------------------------------------
@@ -771,7 +861,7 @@ def _noquote_retry(point, value, token, opts, state, shot):
         if state["bcount"][0] >= opts.browser_max:
             return None, None
         state["bcount"][0] += 1
-        vr = state["browser"].verify(point, nv, token, shot)
+        vr = browser_verify(point, nv, token, shot, opts, state)
         if vr.get("hit"):
             return nv, vr
     return None, None
@@ -820,12 +910,19 @@ def test_payload(ctx, point, name, raw_payload, opts, state):
         entry["evidence"] = save_evidence(opts, point, name, value, token, resp)
     # execution oracle
     can_verify = token in value
-    if (opts.browser and can_verify and state["browser"]
-            and state["browser"].available and state["bcount"][0] < opts.browser_max):
+    if not (opts.browser and can_verify and state.get("browser")
+            and state.get("browser").available):
+        reason = ("--browser not requested" if not opts.browser else
+                  "browser verification unavailable: %s" %
+                  (getattr(state.get("browser"), "error", None) or "oracle not started"))
+        set_verification(entry, {"hit": False, "detail": reason})
+    if (opts.browser and can_verify and state.get("browser")
+            and state.get("browser").available and state["bcount"][0] < opts.browser_max):
         state["bcount"][0] += 1
         shot = screenshot_path(opts, point, name)
-        vr = state["browser"].verify(point, value, token, shot)
+        vr = browser_verify(point, value, token, shot, opts, state)
         _note_browser_issue(vr, state, entry)
+        set_verification(entry, vr)
         if vr.get("hit"):
             entry["status"] = "CONFIRMED"
             entry["confidence"] = 95
@@ -853,6 +950,7 @@ def test_payload(ctx, point, name, raw_payload, opts, state):
                     "url": xf_points.build_request(point, nv, opts)[1],
                     "curl": xf_points.curl_repro(point, nv, opts),
                 })
+                set_verification(entry, nvr)
                 if getattr(opts, "show_on_confirm", False):
                     _show_confirm(point, nv, opts)
                 return entry, True
@@ -871,7 +969,7 @@ def _body_preview(point, value, opts):
 def _scan_fragment(point, opts, state, result):
     """Fragment/DOM testing happens in the browser, never on the server."""
     token = state["token"]
-    if not (opts.browser and state.get("browser") and state["browser"].available):
+    if not (opts.browser and state.get("browser") and state.get("browser").available):
         result["notes"].append("fragment point requires --browser (client-side only)")
         return result
     items = []
@@ -887,7 +985,7 @@ def _scan_fragment(point, opts, state, result):
         value = P.canaryize(payload, token)
         state["bcount"][0] += 1
         shot = screenshot_path(opts, point, name)
-        vr = state["browser"].verify(point, value, token, shot)
+        vr = browser_verify(point, value, token, shot, opts, state)
         entry = {
             "name": "fragment:" + name, "payload": payload, "value": value,
             "context": "fragment-" + point.name, "reflection": {"encoding": "dom"},
@@ -897,6 +995,7 @@ def _scan_fragment(point, opts, state, result):
             "curl": "", "evidence": "", "screenshot": "",
         }
         _note_browser_issue(vr, state, entry)
+        set_verification(entry, vr)
         if vr.get("hit"):
             entry["status"] = "CONFIRMED"
             entry["confidence"] = 95
@@ -914,7 +1013,7 @@ def _scan_fragment(point, opts, state, result):
 
 def _scan_dom_point(point, opts, state, result):
     """Client-side fallback: the server did not reflect, but JS may read the URL."""
-    if not (opts.browser and state.get("browser") and state["browser"].available):
+    if not (opts.browser and state.get("browser") and state.get("browser").available):
         return result
     token = state["token"]
     items = []
@@ -930,17 +1029,19 @@ def _scan_dom_point(point, opts, state, result):
         value = P.canaryize(payload, token)
         state["bcount"][0] += 1
         shot = screenshot_path(opts, point, "dom-" + name)
-        vr = state["browser"].verify(point, value, token, shot)
+        vr = browser_verify(point, value, token, shot, opts, state)
         if vr.get("blocked") or vr.get("error"):
             state.setdefault("browser_blocked" if vr.get("blocked") else "browser_error", [0])[0] += 1
         if vr.get("hit"):
-            result["candidates"].append({
+            dom_entry = {
                 "name": "dom:" + name, "payload": payload, "value": value,
                 "context": "dom-client", "reflection": {"encoding": "dom"},
                 "status": "CONFIRMED", "confidence": 95,
                 "detail": vr.get("detail"), "url": point.url,
                 "body": "", "curl": "", "evidence": "", "screenshot": shot,
-            })
+            }
+            set_verification(dom_entry, vr)
+            result["candidates"].append(dom_entry)
             result["confirmed"] = True
             emit(c("    [CONFIRMED] dom fallback %s" % name, "green"))
             return result
@@ -1002,7 +1103,7 @@ def _escalate(ctx, point, base_payload, opts, state, result):
     if not opts.quiet:
         emit(c("    -> first-hit escalation: %d variants "
                "(encoders + bypass + mutations)" % len(variants), "magenta"))
-    if not (opts.browser and state.get("browser") and state["browser"].available):
+    if not (opts.browser and state.get("browser") and state.get("browser").available):
         emit(c("    ! no browser proof: add --browser to confirm execution", "yellow"))
 
     tried = {c.get("value") for c in result.get("candidates") or []}
@@ -1047,12 +1148,13 @@ def _escalate(ctx, point, base_payload, opts, state, result):
             "evidence": "", "screenshot": "",
         }
         tried.add(value)
-        if (opts.browser and state.get("browser") and state["browser"].available
+        if (opts.browser and state.get("browser") and state.get("browser").available
                 and state["bcount"][0] < opts.browser_max):
             state["bcount"][0] += 1
             shot = screenshot_path(opts, point, "firsthit_" + name.replace(":", "_"))
-            vr = state["browser"].verify(point, value, token, shot)
+            vr = browser_verify(point, value, token, shot, opts, state)
             _note_browser_issue(vr, state, entry)
+            set_verification(entry, vr)
             if vr.get("hit"):
                 entry.update({"status": "CONFIRMED", "confidence": 95,
                               "detail": vr.get("detail"), "screenshot": shot})
@@ -1492,8 +1594,8 @@ def _test_encoded(ctx, point, opts, state, result):
             enc_seen = enc in body
             if not raw_seen and not enc_seen:
                 continue
-            has_browser = bool(opts.browser and state["browser"]
-                               and state["browser"].available
+            has_browser = bool(opts.browser and state.get("browser")
+                               and state.get("browser").available
                                and state["bcount"][0] < opts.browser_max)
             # A literal encoded echo is only meaningful if a browser can decode
             # it in-page; without the oracle it would be a false positive.
@@ -1516,8 +1618,9 @@ def _test_encoded(ctx, point, opts, state, result):
             if has_browser:
                 state["bcount"][0] += 1
                 shot = screenshot_path(opts, point, "enc_" + en)
-                vr = state["browser"].verify(point, enc, state["token"], shot)
+                vr = browser_verify(point, enc, state["token"], shot, opts, state)
                 _note_browser_issue(vr, state, entry)
+                set_verification(entry, vr)
                 if vr.get("hit"):
                     entry["status"] = "CONFIRMED"
                     entry["confidence"] = 95
@@ -1775,6 +1878,51 @@ def run_dom_analysis(opts, factory, limiter, urls=None, csp=None):
     return findings, ""
 
 
+def verify_dom_findings(opts, state, findings, url, label="dom"):
+    """Attempt harmless in-browser proof of static DOM source->sink findings.
+
+    Only controllable, testable sources are attempted. Unsupported sources stay
+    NOT_VERIFIED with an explicit reason instead of being called confirmed.
+    """
+    if not findings or not (opts.browser and state.get("browser")
+                            and state.get("browser").available):
+        return findings
+    parsed = urlparse(url)
+    pairs = parse_qsl(parsed.query, keep_blank_values=True)
+    param = pairs[0][0] if pairs else "q"
+    for i, finding in enumerate(findings):
+        source = str(finding.get("source") or "").lower()
+        if "hash" in source:
+            loc, data = "fragment", {}
+        elif any(k in source for k in ("search", "query", "urlsearchparams", "searchparams")):
+            loc, data = "query", {param: ""}
+        else:
+            finding.setdefault("verification", xf_verify.FINDING_NOT_VERIFIED)
+            finding.setdefault("verification_reason",
+                               "source not browser-testable: %s" % (source or "unknown"))
+            continue
+        token = "zq" + secrets.token_hex(5)
+        value = P.canaryize("<img src=x onerror=alert('__M__')>", token)
+        point = xf_points.Point(label="%s:%d" % (label, i), method="GET",
+                                url=url, location=loc, name=param, data=data)
+        shot = screenshot_path(opts, point, "dom_%d" % i)
+        vr = browser_verify(point, value, token, shot, opts, state)
+        if vr.get("hit"):
+            finding["status"] = "CONFIRMED"
+            finding["verification"] = xf_verify.FINDING_CONFIRMED
+            finding["verification_reason"] = str(vr.get("detail") or "browser execution proof")[:300]
+            finding["browser_evidence"] = vr.get("evidence")
+            finding["detail"] = vr.get("detail")
+            finding["screenshot"] = shot
+            emit(c("    [CONFIRMED][DOM] %s <- %s" %
+                   (finding.get("sink"), finding.get("source")), "green"))
+        else:
+            finding.setdefault("verification", xf_verify.FINDING_NOT_VERIFIED)
+            finding.setdefault("verification_reason",
+                               str(vr.get("detail") or "no canary execution observed")[:300])
+    return findings
+
+
 def run_dom_form(opts, state, browser, factory, limiter):
     """Browser-driven DOM-stored test: fill an on-page field, submit via the
     page's own handler, and look for execution of injected payloads."""
@@ -1814,20 +1962,22 @@ def run_dom_form(opts, state, browser, factory, limiter):
             label="domform", method="BROWSER", url=opts.url,
             location="dom-form", name=opts.dom_form, data={}),
             "domform_%d" % tried)
-        vr = browser.verify_form(opts.url, opts.dom_form, value,
-                                 opts.dom_form_submit, token, shot)
+        vr = browser_verify_form(opts.url, opts.dom_form, value,
+                                 opts.dom_form_submit, token, shot, opts, state)
         tried += 1
         if vr.get("blocked") or vr.get("error"):
             state.setdefault("browser_blocked" if vr.get("blocked") else "browser_error", [0])[0] += 1
         if not vr.get("hit"):
             continue
-        result["candidates"].append({
+        dom_form_entry = {
             "name": "dom-form:%s" % raw[:40], "payload": raw, "value": value,
             "context": "dom-form", "reflection": {"encoding": "dom-stored"},
             "status": "CONFIRMED", "confidence": 95,
             "detail": vr.get("detail"), "url": opts.url, "body": "",
             "curl": "", "evidence": "", "screenshot": shot,
-        })
+        }
+        set_verification(dom_form_entry, vr)
+        result["candidates"].append(dom_form_entry)
         result["confirmed"] = True
         emit(c("    [EXPLOIT][DOM-FORM] %s" % raw, "green"))
         break
@@ -1920,8 +2070,10 @@ def stored_check(opts, state, points):
         result = {"point": trigger.label, "url": trigger_url, "method": "GET",
                   "location": "stored", "param": "stored", "reflected": False,
                   "context": "stored", "candidates": [], "confirmed": False,
-                  "notes": ["seeded %d stored payloads" % delivered],
-                  "blind_confirmed": False, "blind_hits": [], "dom_findings": []}
+                   "notes": ["seeded %d stored payloads" % delivered],
+                   "blind_confirmed": False, "blind_hits": [], "dom_findings": [],
+                   "test_id": token,
+                   "cleanup": {"status": "not_configured", "url": "", "detail": ""}}
         attachment = False
         try:
             r = state["factory"].get().get(trigger_url, timeout=opts.timeout,
@@ -1948,12 +2100,12 @@ def stored_check(opts, state, points):
         except Exception:
             pass
         if (not attachment and opts.browser and state.get("browser")
-                and state["browser"].available):
+                and state.get("browser").available):
             for i, (_point, seed) in enumerate(combos):
                 shot = screenshot_path(opts, trigger, "stored_%d" % i)
                 val = seed % token
-                vr = state["browser"].verify(trigger, val, token, shot,
-                                             reuse_token=True)
+                vr = browser_verify(trigger, val, token, shot, opts, state,
+                                    reuse_token=True)
                 if vr.get("blocked") or vr.get("error"):
                     state.setdefault(
                         "browser_blocked" if vr.get("blocked") else "browser_error",
@@ -1964,17 +2116,39 @@ def stored_check(opts, state, points):
                     continue
                 payload = seed % "__M__"
                 result["confirmed"] = True
-                result["candidates"].append({
+                stored_entry = {
                     "name": "stored:execution", "payload": payload, "value": val,
                     "context": "stored", "reflection": {"encoding": "stored"},
                     "status": "CONFIRMED", "confidence": 95,
                     "detail": vr.get("detail"), "url": trigger_url, "body": "",
-                    "curl": "", "evidence": "", "screenshot": shot})
+                    "curl": "", "evidence": "", "screenshot": shot}
+                set_verification(stored_entry, vr)
+                result["candidates"].append(stored_entry)
                 emit(c("    [EXPLOIT][STORED] %s" % payload, "green"))
                 if opts.first_hit:
                     break
         results.append(result)
+    _cleanup_stored(opts, state, results)
     return results
+
+
+def _cleanup_stored(opts, state, results):
+    """Remove disposable stored test records when the operator supplies a URL."""
+    url = getattr(opts, "stored_cleanup_url", "") or ""
+    if not url:
+        return
+    try:
+        resp = state["factory"].get().get(url, timeout=opts.timeout,
+                                          verify=not opts.insecure)
+        status = "ok" if getattr(resp, "status_code", 0) < 400 else "failed"
+        detail = "HTTP %s" % getattr(resp, "status_code", "?")
+    except Exception as e:
+        status, detail = "failed", str(e)[:120]
+    for result in results:
+        result["cleanup"] = {"status": status, "url": url, "detail": detail}
+        result["notes"].append("stored cleanup: %s (%s)" % (status, detail))
+    emit(c("stored: cleanup %s (%s)" % (status, detail),
+           "green" if status == "ok" else "yellow"))
 
 
 def hold_evidence(opts, point, token, resp):
@@ -2197,6 +2371,8 @@ def build_argparser():
     ap.add_argument("--stored-url", default="", help="URL that renders stored input")
     ap.add_argument("--sxss-url", action="append", default=[],
                     help="repeatable stored/trigger URL (upload render pages, profiles)")
+    ap.add_argument("--stored-cleanup-url", default="",
+                    help="operator-provided URL that deletes disposable stored test records")
     ap.add_argument("--only-poc", action="store_true",
                     help="keep only verified/actionable findings (tier V/A)")
     ap.add_argument("--ai-fallback", action="store_true",
@@ -2384,6 +2560,12 @@ def libscan_check(opts, state, browser=None):
 def main():
     ap = build_argparser()
     a = ap.parse_args(normalize_argv(sys.argv[1:], ap))
+    a._scan_started = time.time()
+    _INTERRUPT.clear()
+    try:
+        signal.signal(signal.SIGINT, _handle_interrupt)
+    except (ValueError, OSError, AttributeError):
+        pass
     P.set_canary_style(a.canary_style)
     global USE_COLOR
     if a.no_color or a.json:
@@ -2645,6 +2827,7 @@ def main():
         json_out=a.json, authorized=True, show_evidence=a.show_evidence,
         quiet=a.quiet, inject_headers=a.inject_header, inject_cookies=a.inject_cookie,
         stored_url=a.stored_url,
+        stored_cleanup_url=a.stored_cleanup_url,
         stored_urls=list(dict.fromkeys(
             (a.sxss_url or []) + ([a.stored_url] if a.stored_url else []))),
         csrf_url=a.csrf_url, libscan=a.libscan, scheme=a.scheme, raw_request=a.raw_request,
@@ -2701,10 +2884,14 @@ def main():
     limiter = RateLimiter(opts.delay)
     state = {
         "factory": factory, "limiter": limiter, "token": "",
-        "stop": threading.Event(), "bcount": [0],
+        "stop": _INTERRUPT, "bcount": [0],
         "browser_blocked": [0], "browser_error": [0], "collab": None,
         "oob_base": opts.blind, "interactsh": None,
         "ecount": [0], "blocked": [0], "csp": {},
+        "browser": None,
+        "browser_verifier": xf_verify.verifier_status(
+            None, requested=getattr(opts, "browser", False)),
+        "scan_started": getattr(opts, "_scan_started", None) or time.time(),
     }
     _BLOCKS.lock.acquire()
     try:
@@ -2905,6 +3092,15 @@ def main():
         if browser.available:
             state["browser"] = browser
             atexit.register(browser.close)
+        else:
+            emit(c("browser: NOT_VERIFIED — %s. Findings cannot be CONFIRMED; "
+                   "install selenium, chromedriver and chromium/chrome." %
+                   browser.error, "yellow"))
+    state["browser_verifier"] = (browser.status() if browser and browser.available
+                                 else xf_verify.verifier_status(
+                                     browser, requested=getattr(opts, "browser", False)))
+    if dom_findings and opts.browser and opts.url:
+        verify_dom_findings(opts, state, dom_findings, opts.url)
     if points:
         with concurrent.futures.ThreadPoolExecutor(max_workers=opts.threads) as ex:
             futs = {ex.submit(scan_point, p, opts, state): p for p in points}
@@ -2920,9 +3116,12 @@ def main():
                                     "blind_confirmed": False, "blind_hits": [],
                                     "dom_findings": []})
     if dom_findings:
+        dom_confirmed = any(
+            str(f.get("status") or "").upper() == "CONFIRMED" and f.get("browser_evidence")
+            for f in dom_findings)
         results.append({"point": "dom:static", "url": opts.url, "method": "GET",
                         "location": "dom", "param": "DOM", "reflected": False,
-                        "context": "dom", "candidates": [], "confirmed": False,
+                        "context": "dom", "candidates": [], "confirmed": dom_confirmed,
                         "notes": [], "blind_confirmed": False, "blind_hits": [],
                         "dom_findings": dom_findings})
 
@@ -2981,6 +3180,8 @@ def main():
                    "unreliable, re-authenticate and re-run." %
                    state["session"].get("reason", "auth expired"), "red"))
     if browser:
+        if getattr(browser, "browser_version", ""):
+            state.setdefault("browser_verifier", {})["browser_version"] = browser.browser_version
         browser.close()
     if state.get("collab"):
         state["collab"].stop()
@@ -2999,6 +3200,7 @@ def main():
         emit(c("confidence: high — dropped %d low-confidence reflection(s)" %
                dropped, "dim"))
     xf_evidence.annotate(results)
+    verification_summary = xf_verify.annotate(results, state.get("browser_verifier"))
     meta = {"waf": fp.get("waf", []), "waf_blocked": fp.get("blocked", False),
             "waf_confidence": fp.get("confidence", 0),
             "waf_suppressed": fp.get("waf_suppressed", False),
@@ -3018,7 +3220,33 @@ def main():
                 {"point": r.get("point"), "fingerprint": r.get("filter_fingerprint")}
                 for r in results if r.get("filter_fingerprint")],
             "http_blocks": _BLOCKS.count, "http_block_events": _BLOCKS.events,
-            "banned": _BLOCKS.banned, "ban_recoveries": _BLOCKS.recoveries}
+            "banned": _BLOCKS.banned, "ban_recoveries": _BLOCKS.recoveries,
+            "browser": dict(state.get("browser_verifier") or {}),
+            "verification": verification_summary,
+            "scope": {
+                "authorized": bool(getattr(opts, "authorized", False)),
+                "reminder": "Only assets you own or have explicit written permission to test.",
+            },
+            "oob": {
+                "configured": bool(opts.blind or opts.interactsh or opts.oob_port),
+                "provider": ("interactsh" if opts.interactsh else
+                             "collaborator" if opts.oob_port else
+                             "external" if opts.blind else "none"),
+                "note": "CALLBACK_OBSERVED is not browser-confirmed execution.",
+            },
+            "scan": {
+                "started": (time.strftime("%Y-%m-%dT%H:%M:%SZ",
+                                          time.gmtime(state["scan_started"]))
+                            if state.get("scan_started") else ""),
+                "finished": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "duration_seconds": xf_verify.elapsed(state.get("scan_started")),
+                "requests": getattr(factory, "request_count", None),
+            }}
+    _dur = meta["scan"]["duration_seconds"]
+    _req = meta["scan"]["requests"]
+    meta["scan"]["requests_per_second"] = (
+        round(_req / _dur, 2) if _req and _dur else None)
+    meta["scan"]["peak_memory_mb"] = _peak_memory_mb()
     if _BLOCKS.aborted:
         emit(c("! URL/IP ban detected: %d WAF/block responses (--max-blocks=%d). "
                "Scan stopped — results are incomplete." %
@@ -3081,6 +3309,9 @@ def main():
                     cand.get("confidence"), cand.get("detection_method") or "-",
                     cand.get("name")))
                 emit("       payload : %s" % cand.get("payload"))
+                repro = cand.get("url") or r.get("url")
+                if repro and (cand.get("status") == "CONFIRMED" or opts.show_evidence):
+                    emit("       url     : %s" % repro)
                 emit("       cell    : %s" % cand.get("detail"))
                 if cand.get("curl") and (cand.get("status") == "CONFIRMED" or opts.show_evidence):
                     emit("       curl    : %s" % cand.get("curl"))

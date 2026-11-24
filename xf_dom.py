@@ -189,6 +189,10 @@ def _finding(url, sink, source, var, arg, js, pos):
         "argument": arg.strip()[:200],
         "snippet": snippet[:320],
         "script": url,
+        "line": js[:pos].count("\n") + 1,
+        "column": pos - js.rfind("\n", 0, pos),
+        "flow": " -> ".join([s for s in (source, var, sink) if s]),
+        "analysis": "static-source-to-sink",
         "severity": "high" if sink in (
             "innerHTML", "outerHTML", "document.write", "eval", "Function",
             "insertAdjacentHTML", "jQuery.html", "jQuery.globalEval",

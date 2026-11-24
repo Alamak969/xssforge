@@ -45,11 +45,19 @@ def grade(result, cand):
     method = detection_method(result, cand)
     conf = int(cand.get("confidence") or 0)
     loc = (result.get("location") or "").lower()
-    if status in ("CONFIRMED", "BLIND") or conf >= 90:
+    if status == "CONFIRMED":
+        if cand.get("browser_evidence"):
+            tier = "V"
+            reason = "browser execution confirmed (canary/dialog evidence recorded)"
+        else:
+            tier = "A"
+            reason = "status CONFIRMED but no browser evidence recorded; treat as unverified"
+    elif status == "BLIND":
         tier = "V"
-        reason = ("browser execution confirmed (alert/dialog observed)"
-                  if status == "CONFIRMED" else
-                  "out-of-band callback confirmed payload execution")
+        reason = "out-of-band callback confirmed payload execution"
+    elif conf >= 90:
+        tier = "A"
+        reason = "high-confidence context evidence; execution not proven"
     elif loc == "libscan":
         tier = "A"
         reason = "outdated JS library with a known XSS advisory"

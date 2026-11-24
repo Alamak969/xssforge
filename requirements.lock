@@ -1,0 +1,9 @@
+# Pinned direct dependencies + test runner for reproducible installs.
+# Regenerate with: python -m pip freeze | grep -E '^(requests|beautifulsoup4|lxml|selenium|cryptography|PyYAML|pytest)=='
+requests==2.32.5
+beautifulsoup4==4.15.0
+lxml==6.1.0
+selenium==4.24.0
+cryptography==49.0.0
+PyYAML==6.0.3
+pytest==9.1.1

@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "description": "Local-lab benchmark fixtures. Expected classifications describe the scanner's verification state, not raw payload count. All routes are served by lab.py on 127.0.0.1 only.",
+  "cases": [
+    {
+      "id": "refl-html-positive",
+      "route": "/reflected",
+      "param": "q",
+      "context": "html",
+      "expected": "CONFIRMED",
+      "rationale": "Raw HTML reflection; harmless canary executes in isolated browser."
+    },
+    {
+      "id": "attr-onfocus-positive",
+      "route": "/attr",
+      "param": "q",
+      "context": "attr_dq",
+      "expected": "CONFIRMED",
+      "rationale": "Double-quoted attribute breakout with autofocus/onfocus handler."
+    },
+    {
+      "id": "escaped-html-negative",
+      "route": "/escaped",
+      "param": "q",
+      "context": "html",
+      "expected": "NOT_VERIFIED",
+      "rationale": "HTML entities escape markup; no executable injection."
+    },
+    {
+      "id": "plain-text-negative",
+      "route": "/plain",
+      "param": "q",
+      "context": "text",
+      "expected": "NOT_VERIFIED",
+      "rationale": "text/plain response cannot create executable HTML."
+    },
+    {
+      "id": "json-negative",
+      "route": "/json",
+      "param": "q",
+      "context": "json",
+      "expected": "NOT_VERIFIED",
+      "rationale": "JSON response; reflections must not be treated as confirmed XSS."
+    }
+  ]
+}
