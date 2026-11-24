@@ -14,12 +14,12 @@ STANDARD_HEADERS = [
 ]
 
 NAME_PATTERNS = [
-    re.compile(r"""\bname\s*=\s*["']([A-Za-z_][\w.-]{1,64})["']""", re.I),
-    re.compile(r"""\bid\s*=\s*["']([A-Za-z_][\w.-]{1,64})["']""", re.I),
-    re.compile(r"""\bwindow\.([A-Za-z_$][\w$]{1,64})\b"""),
-    re.compile(r"""\b(?:var|let|const)\s+([A-Za-z_$][\w$]{1,64})\s*="""),
+    re.compile(r"""\bname\s*=\s*["']([A-Za-z_][\w.-]{0,64})["']""", re.I),
+    re.compile(r"""\bid\s*=\s*["']([A-Za-z_][\w.-]{0,64})["']""", re.I),
+    re.compile(r"""\bwindow\.([A-Za-z_$][\w$]{0,64})\b"""),
+    re.compile(r"""\b(?:var|let|const)\s+([A-Za-z_$][\w$]{0,64})\s*="""),
     re.compile(r"""get(?:Parameter|QueryString)\s*\(\s*["']([^"']{1,64})["']""", re.I),
-    re.compile(r"""params(?:\.|\[["'])([A-Za-z_$][\w$]{1,64})""", re.I),
+    re.compile(r"""params(?:\.|\[["'])([A-Za-z_$][\w$]{0,64})""", re.I),
 ]
 
 SKIP_NAMES = {
@@ -116,7 +116,7 @@ def load_wordlist(source, timeout=10.0, insecure=False):
         if not line or line.startswith("#"):
             continue
         name = line.split("=", 1)[0].split(":", 1)[0].strip()
-        if re.match(r"^[A-Za-z_][\w.-]{1,64}$", name):
+        if re.match(r"^[A-Za-z_][\w.-]{0,64}$", name):
             out.append(name)
     return _dedupe(out)
 

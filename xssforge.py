@@ -2418,8 +2418,9 @@ def main():
             print("  %-34s %-20s %s" % (vtype, c(status, color), note))
         return
 
-    if not a.url and not a.raw_request and not a.openapi and not a.dump_generated:
-        ap.error("-u/--url (or --raw/--openapi) is required")
+    if (not a.url and not a.raw_request and not a.openapi
+            and not a.dump_generated and not a.mass_file):
+        ap.error("-u/--url (or --raw/--openapi/--mass) is required")
 
     if a.recommend:
         obs = xf_advice.probe(a.url, a) if a.url else {}

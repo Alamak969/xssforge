@@ -3,6 +3,7 @@ import base64
 import json
 import os
 import sys
+import tempfile
 import unittest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -301,6 +302,14 @@ class InjectionTests(unittest.TestCase):
         names = xf_inject.mine_names(html)
         self.assertIn("search", names)
         self.assertIn("debug", names)
+        self.assertIn("q", xf_inject.mine_names('<input name="q">'))
+        with tempfile.NamedTemporaryFile("w", suffix=".txt", delete=False) as fh:
+            fh.write("x\nlongname\n")
+            path = fh.name
+        try:
+            self.assertEqual(xf_inject.load_wordlist(path), ["x", "longname"])
+        finally:
+            os.unlink(path)
 
     def test_sweep_headers_cookies(self):
         import types
