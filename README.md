@@ -28,23 +28,24 @@ blind workflows, WAF-aware payload selection and multi-location injection.
 - Diff/encoding analysis
 - Raw HTTP request file input
 - Output formats: JSON/JSONL/TOML/SARIF/HTML/MD
-- Payload corpus: 22,093 static vectors + mutations
+- Payload corpus: 22,391 static vectors + mutations
 
 ## Payload corpus
 
-`payloads.py` combines three sources and adds systematic generators:
+`payloads.py` combines five bundled sources and adds systematic generators:
 
-- **PortSwigger XSS cheat sheet** vectors (`corpus/portswigger.txt`, 714
-  payloads), including every documented event handler/tag pair.
+- **PortSwigger XSS cheat sheet** vectors (`corpus/portswigger.txt`, 390 lines)
+  plus a **2026-11-24 refresh** (`corpus/cheatsheet-2026.txt`, 202 additional
+  vectors) and the **2026 update** (`corpus/2026-update.txt`, 110 vectors).
 - **HexBrain / PayloadsAllTheThings XSS Injection** passages
-  (`corpus/hexbrain.txt`, 352 payloads; upstream MIT,
-  swisskyrepo/PayloadsAllTheThings).
+  (`corpus/hexbrain.txt`, 157 lines; upstream MIT,
+  swisskyrepo/PayloadsAllTheThings) and `corpus/extras-2026.txt`.
 - Hand-curated context, mutation, CSP, JSONP, prototype-pollution, mXSS,
   WAF-bypass and encoding vectors.
 
 On top of that, `_gen_*` builds tag/handler combinations, attribute breakers,
 JS-string breakers, URL schemes and encoded variants at import time. Current
-total: **22,093 category entries / 18,535 unique payload strings** (`python3 xssforge.py --stats`), configurable
+total: **22,391 category entries / 18,771 unique payload strings** (`python3 xssforge.py --stats`), configurable
 per-context with `--payload-limit`. Every one of the 24 context categories
 (HTML, double/single/unquoted attribute, script, URL, CSS, comment, SVG, mXSS,
 CSP, polyglot, Angular, Vue, DOM, prototype pollution, postMessage, JSONP,

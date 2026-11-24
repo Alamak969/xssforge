@@ -5,6 +5,8 @@ Bundled sources (see tools/build_corpus.py):
   * HexBrain / PayloadsAllTheThings XSS passages   -> corpus/hexbrain.txt
   * PortSwigger 2026 cheat-sheet update (110 new
     event/attribute/vue/mXSS vectors)              -> corpus/2026-update.txt
+  * PortSwigger cheat-sheet refresh, 2026-11-24
+    (202 additional vectors)                       -> corpus/cheatsheet-2026.txt
   * curated context, WAF-bypass and encoding seeds -> this file
 
 Runtime placeholders:
@@ -604,7 +606,8 @@ def _gen_corpus_categories():
         "corpus_script": [], "corpus_proto": [],
     }
     seen = set()
-    for src in ("portswigger.txt", "hexbrain.txt", "2026-update.txt", "extras-2026.txt"):
+    for src in ("portswigger.txt", "hexbrain.txt", "2026-update.txt",
+                "extras-2026.txt", "cheatsheet-2026.txt"):
         tag = src.split(".")[0]
         for idx, p in enumerate(_load(src)):
             if p in seen:
