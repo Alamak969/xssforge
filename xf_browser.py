@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 
 try:
     from selenium import webdriver
+    from selenium.webdriver.common.by import By
     from selenium.webdriver.common.keys import Keys
     from selenium.webdriver.chrome.options import Options as ChromeOptions
     from selenium.webdriver.chrome.service import Service
@@ -274,6 +275,40 @@ class BrowserPool:
     def verify_form(self, *args, **kwargs):
         return self._annotate(self._verify_form(*args, **kwargs))
 
+    @staticmethod
+    def _dismiss_alert(driver):
+        try:
+            driver.switch_to.alert.dismiss()
+        except Exception:
+            pass
+
+    def _real_click(self, driver, token):
+        """Trusted WebDriver clicks on canary-bearing elements.
+
+        Chrome refuses to execute javascript: URLs from synthetic el.click()
+        (no user activation), so href vectors need a real input event.
+        """
+        if not token or not getattr(self.opts, "browser_click", True):
+            return
+        try:
+            els = driver.find_elements(By.CSS_SELECTOR, (
+                "a,button,input,select,textarea,details,summary,"
+                "*[onclick],*[onmouseover],*[onfocus]"))
+        except Exception:
+            return
+        self._dismiss_alert(driver)
+        for el in els[:40]:
+            try:
+                html = el.get_attribute("outerHTML") or ""
+            except Exception:
+                continue
+            if token in html:
+                self._dismiss_alert(driver)
+                try:
+                    el.click()
+                except Exception:
+                    pass
+
     def _verify(self, point, value, token, screenshot_path="", reuse_token=False):
         if not self.available:
             return {"hit": False, "logs": [], "detail": self.error, "error": True}
@@ -358,12 +393,14 @@ class BrowserPool:
                 driver.execute_script(_poke_js(token))
             except Exception:
                 pass
+            self._real_click(driver, token)
             logs = self._collect(driver, token, getattr(self.opts, "browser_wait", 3.5))
         except Exception as e:
             detail = "browser error: %s" % str(e)[:180]
             return {"hit": False, "logs": [], "error": True,
                     "detail": detail}
         finally:
+            self._dismiss_alert(driver)
             if screenshot_path:
                 try:
                     driver.save_screenshot(screenshot_path)

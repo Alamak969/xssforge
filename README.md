@@ -223,7 +223,9 @@ Useful flags: `--all` (crawl + browser + DOM + fragment + encoders),
    `confirm`, `prompt`, `print`, `console.log`, `innerHTML`,
    `document.write`, `insertAdjacentHTML` and `eval` instrumentation. Elements
    carrying the canary are focused/clicked/dispatched so event-handler and
-   `javascript:` URL vectors are actually exercised.
+   `javascript:` URL vectors are actually exercised. A trusted WebDriver click
+   is also dispatched on canary-bearing links because Chrome rejects synthetic
+   `el.click()` for `javascript:` URLs without user activation.
 5. Findings are graded V/A/R/I (verified, actionable, reflection,
    informational) with a `detection_method` and a human `confidence_reason`;
    JSON, JSONL, TOML, SARIF, HTML and Markdown reports all carry the grade.
@@ -260,7 +262,7 @@ leaves the host. It falls back across `oast.fun`, `oast.pro`, `oast.live`,
 python3 -m pytest tests/ -q
 ```
 
-146 tests: offline unit tests, local-lab browser/DOM integration tests and a slow-target reliability test. The
+147 tests: offline unit tests, local-lab browser/DOM integration tests and a slow-target reliability test. The
 integration suite starts the bundled deliberately-vulnerable `lab.py` on an
 ephemeral 127.0.0.1 port and self-skips if browser dependencies are missing.
 It asserts that known-executing fixtures become CONFIRMED and that escaped,

@@ -5,6 +5,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from unittest.mock import Mock
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -112,6 +113,16 @@ class VerifyCallTests(unittest.TestCase):
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
             list(ex.map(call, range(50)))
         self.assertEqual(state["browser_verifier"]["counts"]["UNAVAILABLE"], 50)
+
+    def test_trusted_click_on_canary_element(self):
+        el = Mock()
+        el.get_attribute.return_value = "<a href=\"javascript:alert('zqabc')\">x</a>"
+        driver = Mock()
+        driver.find_elements.return_value = [el]
+        pool = object.__new__(xf_browser.BrowserPool)
+        pool.opts = X.Options(browser=True)
+        pool._real_click(driver, "zqabc")
+        el.click.assert_called_once()
 
     def test_browser_evidence_metadata(self):
         pool = object.__new__(xf_browser.BrowserPool)
