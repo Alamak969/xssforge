@@ -36,11 +36,19 @@ def _is_url_echo_network(entry):
     return any(a in low for a in analytics)
 
 
-def _exec_logs(logs, token):
-    """Proof entries that actually show the canary reaching a JS sink/call.
+_EXEC_PREFIXES = ("alert:", "confirm:", "prompt:", "print:", "eval:",
+                  "fetch:", "beacon:")
 
-    Error messages (e.g. `ReferenceError: <canary> is not defined`) and
-    analytics URL echoes only prove that script ran, not that XSS executed.
+
+def _exec_logs(logs, token):
+    """Proof entries that actually executed, not just received the canary.
+
+    A canary reaching a sink is not execution: ``document.write("<option
+    value='...token...'>")``, ``innerHTML = "text"`` or a ``title`` assignment
+    merely carries the string (DVWA's impossible level does exactly this and
+    is not vulnerable). Only dialogs (alert/confirm/prompt/print), eval, and
+    outbound fetch/beacon requests prove the payload actually ran. Error
+    messages and analytics URL echoes are excluded for the same reason.
     """
     out = []
     for entry in logs or []:
@@ -48,6 +56,8 @@ def _exec_logs(logs, token):
         if token not in s or _is_url_echo_network(s):
             continue
         if s.lower().startswith("error:"):
+            continue
+        if not s.lower().startswith(_EXEC_PREFIXES):
             continue
         out.append(s)
     return out

