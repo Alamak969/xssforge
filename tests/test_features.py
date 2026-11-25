@@ -333,6 +333,27 @@ class CrawlerTests(unittest.TestCase):
         c._add_url("http://x/index.php?action=logout")
         self.assertEqual(c.urls, ["http://x/page.php?q=1"])
 
+    def test_non_text_inputs_are_not_form_points(self):
+        import xf_crawl
+        try:
+            from bs4 import BeautifulSoup
+        except ImportError:
+            self.skipTest("bs4 not installed")
+        html = ('<form action="/save" method="post">'
+                '<input name="comment">'
+                '<input type="submit" name="submit">'
+                '<input type="file" name="upload">'
+                '<input type="reset" name="reset">'
+                '<textarea name="body">hi</textarea>'
+                '</form>')
+        class Opt:
+            url = "http://x/"
+            crawl_subdomains = False
+        c = xf_crawl.Crawler(None, Opt())
+        c._add_form("http://x/", BeautifulSoup(html, "html.parser").form)
+        names = [n for n, _ in c.forms[0]["fields"]]
+        self.assertEqual(names, ["comment", "body"])
+
 
 class CookieSweepTests(unittest.TestCase):
     def test_session_cookies_are_not_swept(self):

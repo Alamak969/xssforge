@@ -77,6 +77,12 @@ class Crawler:
             name = el.get("name")
             if not name:
                 continue
+            if el.name == "input":
+                itype = (el.get("type") or "text").lower()
+                # Buttons, reset/submit/image controls and file pickers are not
+                # text sinks; fuzzing them only breaks submissions or uploads.
+                if itype in ("submit", "button", "reset", "image", "file"):
+                    continue
             value = el.get("value") or ""
             if el.name == "textarea":
                 value = el.get_text() or ""
