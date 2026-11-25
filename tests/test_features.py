@@ -198,6 +198,22 @@ class WafTests(unittest.TestCase):
     def test_403_status_is_a_block(self):
         self.assertTrue(self._blocked("nope", 403))
 
+
+class ContentTypeTests(unittest.TestCase):
+    def test_text_plain_is_not_executable(self):
+        import xssforge
+        self.assertTrue(xssforge._non_executable_content_type(
+            "text/plain; charset=utf-8"))
+        self.assertTrue(xssforge._non_executable_content_type("text/csv"))
+        self.assertTrue(xssforge._non_executable_content_type("image/png"))
+
+    def test_html_and_json_stay_testable(self):
+        import xssforge
+        for ctype in ("text/html; charset=utf-8", "application/javascript",
+                      "application/json", "", None):
+            self.assertFalse(xssforge._non_executable_content_type(ctype),
+                             ctype)
+
     def test_quote_mangling_is_detected(self):
         import xssforge
         self.assertTrue(xssforge._quote_mangled(

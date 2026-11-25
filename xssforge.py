@@ -742,6 +742,25 @@ def screenshot_path(opts, point, label):
     return os.path.join(d, base + ".png")
 
 
+_NON_HTML_TYPES = ("text/plain", "text/csv", "text/x-csv", "application/pdf",
+                   "application/octet-stream", "application/zip",
+                   "application/x-tar", "application/gzip")
+_NON_HTML_PREFIXES = ("image/", "audio/", "video/")
+
+
+def _non_executable_content_type(ctype):
+    """True when the response body can never execute markup/JS as XSS.
+
+    A raw reflection in ``text/plain`` (APIs that echo input, logs, downloads)
+    is a false positive: browsers render it as inert text, not HTML. Only skip
+    the unambiguously non-renderable types; JSON/JS stay testable (JSONP, etc.).
+    """
+    ctype = (ctype or "").split(";", 1)[0].strip().lower()
+    if not ctype:
+        return False
+    return ctype in _NON_HTML_TYPES or ctype.startswith(_NON_HTML_PREFIXES)
+
+
 def _looks_blocked(resp):
     try:
         if getattr(resp, "status_code", 0) in (403, 406, 429, 501, 503):
@@ -1335,6 +1354,16 @@ def scan_point(point, opts, shared_state):
         if ctx:
             extra = " tag=%s attr=%s" % (ctx.get("tag"), ctx.get("attr")) if ctx.get("attr") else (" tag=%s" % ctx.get("tag"))
         emit(c("    + reflected: %s%s" % (result["context"], extra), "green"))
+
+    resp_ctype = (resp.headers.get("Content-Type") or "") if resp else ""
+    if _non_executable_content_type(resp_ctype):
+        result["notes"].append(
+            "reflected in non-HTML response (%s) — not executable as XSS"
+            % resp_ctype.split(";", 1)[0].strip())
+        if not opts.quiet:
+            emit(c("    - Content-Type %s is not HTML — skipping executable "
+                   "corpus" % resp_ctype.split(";", 1)[0].strip(), "dim"))
+        return result
 
     cands = result["candidates"]
     cand_cap = getattr(opts, "max_candidates", 500)
